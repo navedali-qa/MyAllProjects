@@ -1,0 +1,10 @@
+[ 
+    {
+        "node": "Solutions",
+        "value": "//*[@id='menu-item-217']/a"
+    },
+    {
+        "node": "SeniorLiving",
+        "value": "//*[@id='menu-item-1322']/a"
+    }
+]
