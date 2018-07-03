@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [Default suite]">
+  <test name="Default test(failed)">
+    <classes>
+      <class name="com.RestAssured.API.TestRailAPI">
+        <methods>
+          <include name="setURL"/>
+          <include name="addProject"/>
+          <include name="deleteProject"/>
+          <include name="getAllProject"/>
+          <include name="addSuite"/>
+          <include name="loginInToApplication"/>
+          <include name="getUnknownProject"/>
+        </methods>
+      </class> <!-- com.RestAssured.API.TestRailAPI -->
+    </classes>
+  </test> <!-- Default test(failed) -->
+</suite> <!-- Failed suite [Default suite] -->
