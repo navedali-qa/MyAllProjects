@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -16,6 +17,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 public class FindBrokenLinks
 {
 
+	WebDriver driver=null;
+	
 	@Test
 	public void findBrokenLinks()
 	{
@@ -27,7 +30,7 @@ public class FindBrokenLinks
 
 		options.addArguments("--disable-infobars");
 
-		WebDriver driver=new ChromeDriver();
+		driver=new ChromeDriver();
 
 		driver.manage().window().maximize();
 
@@ -47,7 +50,7 @@ public class FindBrokenLinks
 			verifyLinkActive(url);
 
 		}
-		driver.quit();
+
 		System.out.println("Program ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 	}
 
@@ -76,7 +79,11 @@ public class FindBrokenLinks
 		}
 	} 
 
-
+	@AfterMethod
+	public void quitDriver()
+	{
+		driver.quit();
+	}
 
 
 }

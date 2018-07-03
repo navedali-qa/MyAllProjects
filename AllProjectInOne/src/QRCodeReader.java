@@ -1,18 +1,16 @@
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import com.google.zxing.BinaryBitmap;
@@ -26,6 +24,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class QRCodeReader
 {
+	WebDriver driver=null;
+	
 	@Test
 	public void qrCodeReader() throws Exception
 	{
@@ -37,7 +37,7 @@ public class QRCodeReader
 
 		options.addArguments("--disable-infobars");
 
-		WebDriver driver=new ChromeDriver(options);
+		driver = new ChromeDriver(options);
 
 		driver.manage().window().maximize();
 
@@ -54,12 +54,16 @@ public class QRCodeReader
 		Result result = new MultiFormatReader().decode(binaryBitmap);
 
 		System.out.println("CODE written in the QR CODE : "+result.getText());
-		
-		Assert.assertEquals("This is a demo QR code reader code", result.getText());
 
-		driver.quit();
+		Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
 
 		System.out.println("Program ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+	}
+
+	@AfterMethod
+	public void quitDriver()
+	{
+		driver.quit();
 	}
 
 }
