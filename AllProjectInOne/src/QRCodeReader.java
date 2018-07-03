@@ -29,7 +29,7 @@ public class QRCodeReader
 	@Test
 	public void qrCodeReader() throws Exception
 	{
-		System.out.println("Program starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		System.out.println("\n\nProgram starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
 
 		WebDriverManager.chromedriver().setup();
 
@@ -57,7 +57,7 @@ public class QRCodeReader
 
 		Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
 
-		System.out.println("Program ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		System.out.println("\n\nProgram ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
 	}
 
 	@AfterMethod

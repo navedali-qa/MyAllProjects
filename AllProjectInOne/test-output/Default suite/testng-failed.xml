@@ -5,6 +5,7 @@
     <classes>
       <class name="QRCodeReader">
         <methods>
+          <include name="quitDriver"/>
           <include name="qrCodeReader"/>
         </methods>
       </class> <!-- QRCodeReader -->
