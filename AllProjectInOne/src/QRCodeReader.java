@@ -1,0 +1,65 @@
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class QRCodeReader
+{
+	@Test
+	public void qrCodeReader() throws Exception
+	{
+		System.out.println("Program starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+
+		WebDriverManager.chromedriver().setup();
+
+		ChromeOptions options = new ChromeOptions();
+
+		options.addArguments("--disable-infobars");
+
+		WebDriver driver=new ChromeDriver(options);
+
+		driver.manage().window().maximize();
+
+		driver.get("file://"+System.getProperty("user.dir")+"/DummyQRFile.html");
+
+		URL url = new URL(driver.findElement(By.tagName("img")).getAttribute("src"));
+
+		BufferedImage bufferedImage = ImageIO.read(url);
+
+		LuminanceSource luminanceSource = new BufferedImageLuminanceSource(bufferedImage);
+
+		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+
+		Result result = new MultiFormatReader().decode(binaryBitmap);
+
+		System.out.println("CODE written in the QR CODE : "+result.getText());
+		
+		Assert.assertEquals("This is a demo QR code reader code", result.getText());
+
+		driver.quit();
+
+		System.out.println("Program ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+	}
+
+}
