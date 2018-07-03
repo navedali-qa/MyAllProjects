@@ -22,6 +22,7 @@ public class FindBrokenLinks
 	@Test
 	public void findBrokenLinks()
 	{
+		
 		System.out.println("\n\nProgram starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
 
 		WebDriverManager.chromedriver().setup();
@@ -52,6 +53,7 @@ public class FindBrokenLinks
 		}
 
 		System.out.println("\n\nProgram ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
+	
 	}
 
 	public void verifyLinkActive(String linkUrl)
@@ -84,6 +86,5 @@ public class FindBrokenLinks
 	{
 		driver.quit();
 	}
-
 
 }
