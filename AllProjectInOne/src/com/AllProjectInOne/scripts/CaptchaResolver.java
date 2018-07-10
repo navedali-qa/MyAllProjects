@@ -14,11 +14,13 @@ import com.DeathByCaptcha.HttpClient;
 
 public class CaptchaResolver
 {
+	
 	public static String solveCaptcha() throws Exception
 	{
 		String username = "";
 		String password = "";
 
+		//DEATH BY CAPTCHA
 		Client client = (Client)(new HttpClient(username, password));
 		client.isVerbose = true;
 		String captchaFile = saveImage("CAPTCHA_IMAGE_XPATH-,-src");
