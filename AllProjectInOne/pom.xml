@@ -59,6 +59,12 @@
 			<version>1.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.github.azakordonets/fabricator -->
+		<dependency>
+			<groupId>com.github.azakordonets</groupId>
+			<artifactId>fabricator_2.12</artifactId>
+			<version>2.1.5</version>
+		</dependency>
 
 	</dependencies>
 </project>
