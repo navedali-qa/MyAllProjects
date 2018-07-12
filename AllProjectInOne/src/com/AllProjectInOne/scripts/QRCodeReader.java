@@ -45,7 +45,7 @@ public class QRCodeReader
 
 		driver.get("file://"+System.getProperty("user.dir")+"/DummyQRFile.html");
 
-		URL url = new URL(driver.findElement(By.tagName("img")).getAttribute("src"));
+		URL url = new URL(driver.findElement(By.className("DummyQRCode")).getAttribute("src"));
 
 		BufferedImage bufferedImage = ImageIO.read(url);
 
@@ -59,6 +59,24 @@ public class QRCodeReader
 
 		Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
 
+		//Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
+
+		
+		url = new URL(driver.findElement(By.className("DummyBarCode")).getAttribute("src"));
+
+		bufferedImage = ImageIO.read(url);
+
+		luminanceSource = new BufferedImageLuminanceSource(bufferedImage);
+
+		binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+
+		result = new MultiFormatReader().decode(binaryBitmap);
+
+		System.out.println("CODE written in the BAR CODE : "+result.getText());
+
+		Assert.assertEquals("01189010720001501719083110LM123", result.getText());
+
+		
 		System.out.println("\n\nProgram ends at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
 
 	}
