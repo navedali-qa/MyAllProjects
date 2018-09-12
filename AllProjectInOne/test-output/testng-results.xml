@@ -2,16 +2,20 @@
 <testng-results skipped="0" failed="0" ignored="0" total="1" passed="1">
   <reporter-output>
   </reporter-output>
-  <suite name="Default suite" duration-ms="3959" started-at="2018-07-10T21:20:32Z" finished-at="2018-07-10T21:20:36Z">
+  <suite name="Default suite" duration-ms="8434" started-at="2018-07-12T19:12:45Z" finished-at="2018-07-12T19:12:54Z">
     <groups>
     </groups>
-    <test name="Default test" duration-ms="3959" started-at="2018-07-10T21:20:32Z" finished-at="2018-07-10T21:20:36Z">
-      <class name="com.AllProjectInOne.scripts.FakeDataGenerator">
-        <test-method status="PASS" signature="fakeDataGenerator()[pri:0, instance:com.AllProjectInOne.scripts.FakeDataGenerator@6500df86]" name="fakeDataGenerator" duration-ms="3905" started-at="2018-07-10T21:20:32Z" finished-at="2018-07-10T21:20:36Z">
+    <test name="Default test" duration-ms="8434" started-at="2018-07-12T19:12:45Z" finished-at="2018-07-12T19:12:54Z">
+      <class name="com.AllProjectInOne.scripts.QRCodeReader">
+        <test-method status="PASS" signature="qrCodeReader()[pri:0, instance:com.AllProjectInOne.scripts.QRCodeReader@5025a98f]" name="qrCodeReader" duration-ms="7702" started-at="2018-07-12T19:12:46Z" finished-at="2018-07-12T19:12:53Z">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- fakeDataGenerator -->
-      </class> <!-- com.AllProjectInOne.scripts.FakeDataGenerator -->
+        </test-method> <!-- qrCodeReader -->
+        <test-method status="PASS" signature="quitDriver()[pri:0, instance:com.AllProjectInOne.scripts.QRCodeReader@5025a98f]" name="quitDriver" is-config="true" duration-ms="686" started-at="2018-07-12T19:12:53Z" finished-at="2018-07-12T19:12:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- quitDriver -->
+      </class> <!-- com.AllProjectInOne.scripts.QRCodeReader -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

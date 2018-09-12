@@ -58,9 +58,6 @@ public class QRCodeReader
 		System.out.println("CODE written in the QR CODE : "+result.getText());
 
 		Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
-
-		//Assert.assertEquals("This is a demo QR code reader code from https://www.the-qrcode-generator.com/", result.getText());
-
 		
 		url = new URL(driver.findElement(By.className("DummyBarCode")).getAttribute("src"));
 

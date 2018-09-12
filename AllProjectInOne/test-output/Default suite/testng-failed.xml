@@ -3,11 +3,12 @@
 <suite guice-stage="DEVELOPMENT" name="Failed suite [Default suite]">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="com.AllProjectInOne.scripts.VideoRecorder">
+      <class name="com.AllProjectInOne.scripts.QRCodeReader">
         <methods>
-          <include name="shouldFailAndCreateRecordWithTestName"/>
+          <include name="quitDriver"/>
+          <include name="qrCodeReader"/>
         </methods>
-      </class> <!-- com.AllProjectInOne.scripts.VideoRecorder -->
+      </class> <!-- com.AllProjectInOne.scripts.QRCodeReader -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
