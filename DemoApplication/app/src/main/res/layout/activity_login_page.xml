@@ -110,11 +110,12 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="18sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:visibility="gone"
             android:layout_marginLeft="100dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="25dp"
+            android:text="Mobile Details"
             tools:text="Mobile Details" />
 
         <TableLayout
@@ -278,7 +279,57 @@
             android:layout_marginTop="200dp"
             android:text="Proceed" />
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="200dp"
+            android:text="LogOut" />
 
+        <TextView
+            android:id="@+id/textView_Time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="50dp"
+            android:gravity="top|bottom|right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:text="DD : HH : MM : SS" />
+
+        <TextView
+            android:id="@+id/textView_confirm_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="300dp"
+            android:gravity="top|bottom|right"
+            android:textDirection="ltr"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:text="Enter Password to logout" />
+
+        <EditText
+            android:id="@+id/editText_confirm_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="320dp"
+            android:ems="10"
+            android:gravity="top|bottom|left"
+            android:inputType="textPassword"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+
+    </FrameLayout>
 
 </FrameLayout>

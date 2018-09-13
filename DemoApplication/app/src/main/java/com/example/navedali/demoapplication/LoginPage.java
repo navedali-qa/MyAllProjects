@@ -1,12 +1,10 @@
 package com.example.navedali.demoapplication;
 
 import android.annotation.SuppressLint;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.app.ActivityManager;
@@ -25,6 +23,12 @@ import java.util.Calendar;
 
 public class LoginPage extends AppCompatActivity
 {
+    int day = 0;
+    int hour = 0;
+    int min = 0;
+    int sec = -1;
+
+    Thread t;
     ActivityManager activityManager;
     private static final boolean AUTO_HIDE = true;
 
@@ -105,6 +109,7 @@ public class LoginPage extends AppCompatActivity
         final TextView textView_Mobile_Details = (TextView) findViewById(R.id.textView_Mobile_Details);
         final Button buttonLogin = (Button) findViewById(R.id.buttonLogin);
         final Button buttonProceed = (Button) findViewById(R.id.buttonProceed);
+        final Button buttonLogout = (Button) findViewById(R.id.buttonLogout);
 
         //table details
         final TableLayout tableLayout_Mobile_Details = (TableLayout)findViewById(R.id.tableLayout_Mobile_Details);
@@ -115,13 +120,20 @@ public class LoginPage extends AppCompatActivity
         final TextView table_IMEI_nu = (TextView)findViewById(R.id.table_IMEI_nu);
         final TextView table_start_Time = (TextView)findViewById(R.id.table_start_Time);
 
+        //Time Text View
+        final TextView textView_Time = (TextView)findViewById(R.id.textView_Time);
+
+
+        //Logout process
+        final TextView textView_confirm_password = (TextView) findViewById(R.id.textView_confirm_password);
+        final EditText editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
 
         buttonLogin.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
                 System.out.println("USER DETAILS :\n"+editText_username.getText()+"\n"+editText_password.getText());
-                if (editText_username.getText().toString().equals("admin")&& editText_password.getText().toString().equals("admin"))
+                if (editText_username.getText().toString().equals("a")&& editText_password.getText().toString().equals("a"))
                 {
                     textView_username_text.setVisibility(View.GONE);
                     editText_username.setVisibility(View.GONE);
@@ -131,6 +143,7 @@ public class LoginPage extends AppCompatActivity
                     textView_Mobile_Details.setVisibility(View.VISIBLE);
                     buttonProceed.setVisibility(View.VISIBLE);
                     tableLayout_Mobile_Details.setVisibility(View.VISIBLE);
+                    textView_Time.setText("HH : MM : SS");
                     //Toast.makeText(LoginPage.this, editText_username.getText(), Toast.LENGTH_SHORT).show();
                     System.out.println("DEVICE DETAILS :\n"
                                         +"\nBRAND : "+Build.BRAND
@@ -161,14 +174,18 @@ public class LoginPage extends AppCompatActivity
         {
             public void onClick(View v)
             {
+                day = 0;
+                hour = 0;
+                min = 0;
+                sec = -1;
+
+                textView_Time.setVisibility(View.VISIBLE);
                 buttonProceed.setVisibility(View.GONE);
                 textView_Mobile_Details.setVisibility(View.GONE);
                 tableLayout_Mobile_Details.setVisibility(View.GONE);
-                buttonLogin.setVisibility(View.VISIBLE);
-                editText_password.setVisibility(View.VISIBLE);
-                textView_password_text.setVisibility(View.VISIBLE);
-                editText_username.setVisibility(View.VISIBLE);
-                textView_username_text.setVisibility(View.VISIBLE);
+                buttonLogout.setVisibility(View.VISIBLE);
+                textView_confirm_password.setVisibility(View.VISIBLE);
+                editText_confirm_password.setVisibility(View.VISIBLE);
                 table_Name.setText("XXXXX");
                 table_Model.setText("XXXXX");
                 table_Version.setText("XXXXX");
@@ -177,6 +194,96 @@ public class LoginPage extends AppCompatActivity
                 editText_username.setText("");
                 editText_password.setText("");
                 //Toast.makeText(LoginPage.this, editText_password.getText(), Toast.LENGTH_SHORT).show();
+
+                t = new Thread()
+                {
+
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            while (!isInterrupted())
+                            {
+                                Thread.sleep(1000);
+                                runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        sec++;
+                                        if (sec == 59) {
+                                            sec = 0;
+                                            min++;
+                                        }
+                                        if (min == 59)
+                                        {
+                                            min = 0;
+                                            hour++;
+                                        }
+                                        if(hour == 24)
+                                        {
+                                            day++;
+                                        }
+                                        if(day>0)
+                                        {
+                                            textView_Time.setText(String.valueOf(day)+"D : "+String.valueOf(hour) + "H : " + String.valueOf(min) + "M : " + String.valueOf(sec)+"S");
+                                        }
+                                        else
+                                        {
+                                            textView_Time.setText(String.valueOf(hour) + "H : " + String.valueOf(min) + "M : " + String.valueOf(sec)+"S");
+                                        }
+                                    }
+                                });
+                            }
+                        } catch (InterruptedException e) { }
+                    }
+                };
+                t.start();
+            }
+        });
+
+        buttonLogout.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                if(editText_confirm_password.getText().toString().equals("a"))
+                {
+                    textView_Time.setVisibility(View.GONE);
+                    buttonLogout.setVisibility(View.GONE);
+                    buttonLogin.setVisibility(View.VISIBLE);
+                    editText_password.setVisibility(View.VISIBLE);
+                    textView_password_text.setVisibility(View.VISIBLE);
+                    editText_username.setVisibility(View.VISIBLE);
+                    textView_username_text.setVisibility(View.VISIBLE);
+                    textView_confirm_password.setVisibility(View.GONE);
+                    editText_confirm_password.setVisibility(View.GONE);
+                    table_Name.setText("XXXXX");
+                    table_Model.setText("XXXXX");
+                    table_Version.setText("XXXXX");
+                    table_S_no.setText("XXXXX");
+                    table_IMEI_nu.setText("XXXX");
+                    editText_username.setText("");
+                    editText_password.setText("");
+                    textView_Time.setText("HH : MM : SS");
+                    day = 0;
+                    hour = 0;
+                    min = 0;
+                    sec = -1;
+                    t.interrupt();
+                    editText_confirm_password.setText("");
+                }
+                else
+                    if(editText_confirm_password.getText().toString().trim().equals(""))
+                    {
+                        Toast.makeText(LoginPage.this, "Please enter password to logout", Toast.LENGTH_SHORT).show();
+                        editText_confirm_password.setText("");
+                    }
+                else
+                {
+                    Toast.makeText(LoginPage.this, "Please enter correct password to logout", Toast.LENGTH_SHORT).show();
+                    editText_confirm_password.setText("");
+                }
             }
         });
     }
@@ -254,15 +361,15 @@ public class LoginPage extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Toast.makeText(LoginPage.this,"Button Disabled",Toast.LENGTH_SHORT).show();
-        return;
+            Toast.makeText(LoginPage.this, "Button Disabled", Toast.LENGTH_SHORT).show();
+            return;
     }
 
     @Override
     protected void onPause()
     {
-        Toast.makeText(LoginPage.this,"Button Disabled",Toast.LENGTH_SHORT).show();
-        super.onPause();
-        activityManager.moveTaskToFront(getTaskId(), 0);
+            Toast.makeText(LoginPage.this, "Button Disabled", Toast.LENGTH_SHORT).show();
+            super.onPause();
+            activityManager.moveTaskToFront(getTaskId(), 0);
     }
 }
