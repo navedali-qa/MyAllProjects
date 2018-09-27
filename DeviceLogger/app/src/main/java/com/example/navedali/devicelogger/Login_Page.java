@@ -335,8 +335,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         boolean loginAdmin = false;
         boolean loginUser = false;
-        try
-        {
             if(editText_username.getText().toString().equals("aa") && editText_password.getText().toString().equals("aa"))
             {
                 loginAdmin = true;
@@ -356,35 +354,37 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             }
             else
             {
-                Class.forName("com.mysql.jdbc.Driver");
-                System.out.println("SERVER : "+"jdbc:mysql://"+serverUrl+"/"+database);
-                con=(Connection) DriverManager.getConnection("jdbc:mysql://"+serverUrl+"/"+database,"root","");
-
-                statement=con.createStatement();
-
-                resultSet = (ResultSet) statement.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='"+editText_username.getText().toString().trim()+"' AND Admin_Password='"+editText_password.getText().toString()+"'");
-                while (resultSet.next())
+                try
                 {
-                    if(editText_password.getText().toString().equals(resultSet.getString(3)))
-                    {
-                        loginAdmin = true;
-                    }
-                    break;
-                }
-                if(!loginAdmin)
-                {
-                    resultSet = (ResultSet) statement.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
-                    while (resultSet.next())
-                    {
-                        if(editText_password.getText().toString().equals(resultSet.getString(5)))
-                        {
-                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                            userName = resultSet.getString(4);
-                            userPassword = resultSet.getString(5);
-                            loginUser = true;
+                    Class.forName("com.mysql.jdbc.Driver");
+                    System.out.println("SERVER : " + "jdbc:mysql://" + serverUrl + "/" + database);
+                    con = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "");
+
+                    statement = con.createStatement();
+
+                    resultSet = (ResultSet) statement.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
+                    while (resultSet.next()) {
+                        if (editText_password.getText().toString().equals(resultSet.getString(3))) {
+                            loginAdmin = true;
                         }
                         break;
                     }
+                    if (!loginAdmin) {
+                        resultSet = (ResultSet) statement.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
+                        while (resultSet.next()) {
+                            if (editText_password.getText().toString().equals(resultSet.getString(5))) {
+                                logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
+                                userName = resultSet.getString(4);
+                                userPassword = resultSet.getString(5);
+                                loginUser = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
                 }
 
                 if (loginAdmin)
@@ -439,11 +439,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 }
             }
         }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     public void proceedButtonFunctionality()
     {
