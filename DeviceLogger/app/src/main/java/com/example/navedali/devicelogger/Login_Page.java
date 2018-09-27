@@ -335,6 +335,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         boolean loginAdmin = false;
         boolean loginUser = false;
+        boolean networkConnected=true;
+
             if(editText_username.getText().toString().equals("aa") && editText_password.getText().toString().equals("aa"))
             {
                 loginAdmin = true;
@@ -343,6 +345,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             if(editText_username.getText().toString().equals("bb") && editText_password.getText().toString().equals("bb"))
             {
                 userPassword="bb";
+                logged_UserName = "Dummy User";
                 loginUser = true;
             }
             else
@@ -385,58 +388,61 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 catch(Exception e)
                 {
                     Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                    networkConnected=false;
                 }
+            }
+            if (loginAdmin)
+            {
+                fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+                fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
+                timer = new Timer();
+                timer.cancel();
+            }
+            else
+            if (loginUser)
+            {
+                System.out.println("DEVICE DETAILS :\n"
+                        + "\nBRAND : " + Build.BRAND
+                        + "\nMODEL : " + Build.MODEL
+                        + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
+                        + "\nVERIONS PRODUCT : " + Build.PRODUCT
+                        + "\nSERIAL : " + Build.SERIAL
+                        + "\nID : " + Build.VERSION.RELEASE
+                        + "\nMANUFACTURER : " + Build.MANUFACTURER);
 
-                if (loginAdmin)
+                table_Name.setText(Build.BRAND);
+                table_Model.setText(Build.MODEL);
+                table_Version.setText(Build.VERSION.RELEASE);
+                build_SERIAL = Build.SERIAL;
+                table_S_no.setText(build_SERIAL);
+                table_IMEI_nu.setText("XXXX");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                table_start_Time.setText(sdf.format(new Date()));
+                build_SERIAL=Build.SERIAL;
+                fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+                fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
+                try
                 {
-                    fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-                    fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
-                    timer = new Timer();
-                    timer.cancel();
+                    sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                    con=(Connection) DriverManager.getConnection("jdbc:mysql://"+serverUrl+"/"+database,"root","");
+                    String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('"+userName+"', '"+Build.SERIAL+"', '"+sdf.format(new Date())+"', 'LOCKED', '"+Build.BRAND+"', '"+Build.MODEL+"', '"+Build.VERSION.RELEASE+"')";
+                    preparedStatement = con.prepareStatement(query);
+
+                    preparedStatement.execute();
                 }
-                else
-                if (loginUser)
+                catch (Exception e)
                 {
-                    System.out.println("DEVICE DETAILS :\n"
-                            + "\nBRAND : " + Build.BRAND
-                            + "\nMODEL : " + Build.MODEL
-                            + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
-                            + "\nVERIONS PRODUCT : " + Build.PRODUCT
-                            + "\nSERIAL : " + Build.SERIAL
-                            + "\nID : " + Build.VERSION.RELEASE
-                            + "\nMANUFACTURER : " + Build.MANUFACTURER);
-
-                    table_Name.setText(Build.BRAND);
-                    table_Model.setText(Build.MODEL);
-                    table_Version.setText(Build.VERSION.RELEASE);
-                    build_SERIAL = Build.SERIAL;
-                    table_S_no.setText(build_SERIAL);
-                    table_IMEI_nu.setText("XXXX");
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    table_start_Time.setText(sdf.format(new Date()));
-                    build_SERIAL=Build.SERIAL;
-                    fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-                    fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
-                    try
-                    {
-                        sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        con=(Connection) DriverManager.getConnection("jdbc:mysql://"+serverUrl+"/"+database,"root","");
-                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('"+userName+"', '"+Build.SERIAL+"', '"+sdf.format(new Date())+"', 'LOCKED', '"+Build.BRAND+"', '"+Build.MODEL+"', '"+Build.VERSION.RELEASE+"')";
-                        preparedStatement = con.prepareStatement(query);
-
-                        preparedStatement.execute();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+                    e.printStackTrace();
                 }
-                else
+            }
+            else
+            {
+                if(networkConnected)
                 {
                     Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                    editText_username.setText("");
-                    editText_password.setText("");
                 }
+                editText_username.setText("");
+                editText_password.setText("");
             }
         }
 
