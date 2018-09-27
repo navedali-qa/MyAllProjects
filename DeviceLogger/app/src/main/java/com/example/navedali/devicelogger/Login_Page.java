@@ -85,6 +85,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     String build_SERIAL="";
     PreparedStatement preparedStatement;
 
+    String backupAdminName="aa";
+    String backupUserName="bb";
+
     private final Runnable mHidePart2Runnable = new Runnable()
     {
         @SuppressLint("InlinedApi")
@@ -337,14 +340,15 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         boolean loginUser = false;
         boolean networkConnected=true;
 
-            if(editText_username.getText().toString().equals("aa") && editText_password.getText().toString().equals("aa"))
+            if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
             {
                 loginAdmin = true;
             }
             else
-            if(editText_username.getText().toString().equals("bb") && editText_password.getText().toString().equals("bb"))
+            if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
             {
-                userPassword="bb";
+                userName=backupUserName;
+                userPassword=backupUserName;
                 logged_UserName = "Dummy User";
                 loginUser = true;
             }
@@ -384,6 +388,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                             break;
                         }
                     }
+                    statement.close();
+                    resultSet.close();
+                    con.close();
                 }
                 catch(Exception e)
                 {
@@ -423,12 +430,17 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
                 try
                 {
-                    sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    con=(Connection) DriverManager.getConnection("jdbc:mysql://"+serverUrl+"/"+database,"root","");
-                    String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('"+userName+"', '"+Build.SERIAL+"', '"+sdf.format(new Date())+"', 'LOCKED', '"+Build.BRAND+"', '"+Build.MODEL+"', '"+Build.VERSION.RELEASE+"')";
-                    preparedStatement = con.prepareStatement(query);
+                    if(userName!=backupUserName)
+                    {
+                        sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        con = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "");
+                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
+                        preparedStatement = con.prepareStatement(query);
 
-                    preparedStatement.execute();
+                        preparedStatement.execute();
+                        preparedStatement.close();
+                        con.close();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -480,8 +492,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 System.out.println(query);
                 PreparedStatement preparedStmt = con.prepareStatement(query);
                 preparedStmt.executeUpdate();
-
+                userName="";
                 con.close();
+                preparedStmt.close();
             }
             catch (Exception e)
             {
