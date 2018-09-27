@@ -439,7 +439,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
                         preparedStatement.execute();
                         preparedStatement.close();
-                        con.close();
                     }
                 }
                 catch (Exception e)

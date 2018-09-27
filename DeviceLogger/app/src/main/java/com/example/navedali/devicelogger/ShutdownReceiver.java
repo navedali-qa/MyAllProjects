@@ -30,6 +30,7 @@ public class ShutdownReceiver extends BroadcastReceiver
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.executeUpdate();
 
+			preparedStmt.close();
 			con.close();
 		}
 		catch(Exception e)
