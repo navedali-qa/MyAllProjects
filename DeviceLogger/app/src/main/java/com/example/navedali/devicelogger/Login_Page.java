@@ -73,8 +73,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public LinearLayout fullscreen_content_admin_controls_horizontal;
 
     //DATABASE VARIABLES:
-    Connection con;
-    Statement statement;
+    DatabaseMethods databaseMethods;
     ResultSet resultSet;
     //String serverUrl="192.168.0.105:3306";
     String serverUrl="192.168.14.148:3306";
@@ -129,6 +128,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         super.onCreate(savedInstanceState);
 
+        databaseMethods = new DatabaseMethods(serverUrl,database);
+
         policyManager = new PolicyManager(this);
 
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -167,29 +168,20 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         fullscreen_content_admin_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_admin_controls_horizontal);
 
         boolean found=false;
-        System.out.println("WORKING");
-        System.out.println("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
+
         try
         {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
-            StrictMode.setThreadPolicy(policy);
-
-            Class.forName("com.mysql.jdbc.Driver");
-            con = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "");
-
-            statement = con.createStatement();
-            resultSet = (ResultSet) statement.executeQuery("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
+            resultSet = databaseMethods.executeQuery("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
             while (resultSet.next())
             {
                 userName = resultSet.getString(2);
                 found=true;
                 break;
             }
-
             if(found)
             {
-                resultSet = (ResultSet) statement.executeQuery("SELECT * FROM users WHERE Username='" + userName + "'");
+                resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + userName + "'");
                 while (resultSet.next())
                 {
                     logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
@@ -206,6 +198,11 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         {
             textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
             fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
+            if (timer!=null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
+            {
+                timer.cancel();
+                timer = null;
+            }
         }
         else
         {
@@ -225,7 +222,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         if (mVisible) {
             hide();
         } else {
-           // show();
+            // show();
         }
     }
 
@@ -249,7 +246,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
-
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
     }*/
@@ -260,6 +256,12 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        databaseMethods = new DatabaseMethods(serverUrl,database);
+    }
 
     @Override
     public void onClick(View v)
@@ -340,122 +342,106 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         boolean loginUser = false;
         boolean networkConnected=true;
 
-            if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
+        if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
+        {
+            loginAdmin = true;
+        }
+        else
+        if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
+        {
+            userName=backupUserName;
+            userPassword=backupUserName;
+            logged_UserName = "Dummy User";
+            loginUser = true;
+            networkConnected=true;
+        }
+        else
+        if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
+        {
+            Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
+            editText_username.setText("");
+            editText_password.setText("");
+        }
+        else
+        {
+            try
             {
-                loginAdmin = true;
-            }
-            else
-            if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
-            {
-                userName=backupUserName;
-                userPassword=backupUserName;
-                logged_UserName = "Dummy User";
-                loginUser = true;
-            }
-            else
-            if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
-            {
-                Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
-                editText_username.setText("");
-                editText_password.setText("");
-            }
-            else
-            {
-                try
+                resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
+                while (resultSet.next())
                 {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    System.out.println("SERVER : " + "jdbc:mysql://" + serverUrl + "/" + database);
-                    con = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "");
-
-                    statement = con.createStatement();
-
-                    resultSet = (ResultSet) statement.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
+                    if (editText_password.getText().toString().equals(resultSet.getString(3))) {
+                        loginAdmin = true;
+                    }
+                    break;
+                }
+                if (!loginAdmin)
+                {
+                    resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
                     while (resultSet.next()) {
-                        if (editText_password.getText().toString().equals(resultSet.getString(3))) {
-                            loginAdmin = true;
+                        if (editText_password.getText().toString().equals(resultSet.getString(5))) {
+                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
+                            userName = resultSet.getString(4);
+                            userPassword = resultSet.getString(5);
+                            loginUser = true;
                         }
                         break;
                     }
-                    if (!loginAdmin) {
-                        resultSet = (ResultSet) statement.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
-                        while (resultSet.next()) {
-                            if (editText_password.getText().toString().equals(resultSet.getString(5))) {
-                                logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                                userName = resultSet.getString(4);
-                                userPassword = resultSet.getString(5);
-                                loginUser = true;
-                            }
-                            break;
-                        }
-                    }
-                    statement.close();
-                    resultSet.close();
-                    con.close();
                 }
-                catch(Exception e)
-                {
-                    Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
-                    networkConnected=false;
-                }
+                resultSet.close();
             }
-            if (loginAdmin)
+            catch(Exception e)
             {
-                fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-                fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
-                timer = new Timer();
-                timer.cancel();
-            }
-            else
-            if (loginUser)
-            {
-                System.out.println("DEVICE DETAILS :\n"
-                        + "\nBRAND : " + Build.BRAND
-                        + "\nMODEL : " + Build.MODEL
-                        + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
-                        + "\nVERIONS PRODUCT : " + Build.PRODUCT
-                        + "\nSERIAL : " + Build.SERIAL
-                        + "\nID : " + Build.VERSION.RELEASE
-                        + "\nMANUFACTURER : " + Build.MANUFACTURER);
-
-                table_Name.setText(Build.BRAND);
-                table_Model.setText(Build.MODEL);
-                table_Version.setText(Build.VERSION.RELEASE);
-                build_SERIAL = Build.SERIAL;
-                table_S_no.setText(build_SERIAL);
-                table_IMEI_nu.setText("XXXX");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                table_start_Time.setText(sdf.format(new Date()));
-                build_SERIAL=Build.SERIAL;
-                fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-                fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
-                try
-                {
-                    if(userName!=backupUserName)
-                    {
-                        sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        con = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "");
-                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
-                        preparedStatement = con.prepareStatement(query);
-
-                        preparedStatement.execute();
-                        preparedStatement.close();
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                if(networkConnected)
-                {
-                    Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                }
-                editText_username.setText("");
-                editText_password.setText("");
+                Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                networkConnected=false;
             }
         }
+        if (loginAdmin)
+        {
+            fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+            fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
+            timer = new Timer();
+            timer.cancel();
+        }
+        else
+        if (loginUser)
+        {
+            System.out.println("DEVICE DETAILS :\n"
+                    + "\nBRAND : " + Build.BRAND
+                    + "\nMODEL : " + Build.MODEL
+                    + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
+                    + "\nVERIONS PRODUCT : " + Build.PRODUCT
+                    + "\nSERIAL : " + Build.SERIAL
+                    + "\nID : " + Build.VERSION.RELEASE
+                    + "\nMANUFACTURER : " + Build.MANUFACTURER);
+
+            table_Name.setText(Build.BRAND);
+            table_Model.setText(Build.MODEL);
+            table_Version.setText(Build.VERSION.RELEASE);
+            build_SERIAL = Build.SERIAL;
+            table_S_no.setText(build_SERIAL);
+            table_IMEI_nu.setText("XXXX");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            table_start_Time.setText(sdf.format(new Date()));
+            build_SERIAL=Build.SERIAL;
+            fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+            fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
+            if(userName!=backupUserName)
+            {
+                sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
+                databaseMethods.insertUpdateValue(query);
+            }
+        }
+        else
+        {
+            if(networkConnected)
+            {
+                Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+            }
+            editText_username.setText("");
+            editText_password.setText("");
+        }
+    }
 
     public void proceedButtonFunctionality()
     {
@@ -467,7 +453,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         timer = new Timer();
         timer.cancel();
         moveTaskToBack(true);
-
     }
 
     public void logoutButtonFunctionality()
@@ -482,36 +467,24 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             editText_confirm_password.setText("");
             fullscreen_content_logout_controls_horizontal.setVisibility(View.GONE);
             fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-            try
-            {
-                Class.forName("com.mysql.jdbc.Driver");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-                String query = "UPDATE `login_info` SET `End_Time` = \"" + sdf.format(new Date()) + "\" WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" AND `UserName`=\"" + userName + "\" AND `End_Time`=\"LOCKED\"";
-                System.out.println(query);
-                PreparedStatement preparedStmt = con.prepareStatement(query);
-                preparedStmt.executeUpdate();
-                userName="";
-                con.close();
-                preparedStmt.close();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                System.out.println(e);
-            }
+            String query = "UPDATE `login_info` SET `End_Time` = \"" + sdf.format(new Date()) + "\" WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" AND `UserName`=\"" + userName + "\" AND `End_Time`=\"LOCKED\"";
+            System.out.println(query);
+            databaseMethods.insertUpdateValue(query);
+            userName="";
         }
         else
-            if (editText_confirm_password.getText().toString().trim().equals(""))
-            {
-                Toast.makeText(Login_Page.this, "Please enter password to logout", Toast.LENGTH_SHORT).show();
-                editText_confirm_password.setText("");
-            }
-            else
-            {
-                Toast.makeText(Login_Page.this, "Please enter correct password to logout", Toast.LENGTH_SHORT).show();
-                editText_confirm_password.setText("");
-            }
+        if (editText_confirm_password.getText().toString().trim().equals(""))
+        {
+            Toast.makeText(Login_Page.this, "Please enter password to logout", Toast.LENGTH_SHORT).show();
+            editText_confirm_password.setText("");
+        }
+        else
+        {
+            Toast.makeText(Login_Page.this, "Please enter correct password to logout", Toast.LENGTH_SHORT).show();
+            editText_confirm_password.setText("");
+        }
     }
 
     //DISABLE ANDROID BUTTONS
@@ -525,6 +498,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             timer = null;
         }
         delayedHide(5);
+        databaseMethods = new DatabaseMethods(serverUrl,database);
         super.onResume();
     }
 
