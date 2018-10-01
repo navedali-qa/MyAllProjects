@@ -1,7 +1,9 @@
 package com.example.navedali.devicelogger;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
+import android.widget.Toast;
 
 import java.net.ConnectException;
 import java.sql.Connection;
@@ -15,10 +17,12 @@ public class DatabaseMethods
     Connection connection;
     PreparedStatement preparedStatement;
     Statement statement;
-    public DatabaseMethods(String serverUrl,String database)
+    Context context;
+    public DatabaseMethods(Context context, String serverUrl, String database)
     {
         try
         {
+            this.context = context;
             if(connection==null)
             {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -31,7 +35,8 @@ public class DatabaseMethods
         }
         catch (Exception e)
         {
-e.printStackTrace();
+            Toast.makeText(context, "Database is not connected...", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -42,10 +47,11 @@ e.printStackTrace();
         {
             statement = connection.createStatement();
             resultSet = (ResultSet) statement.executeQuery(query);
-            statement.close();
+           // statement.close();
         }
         catch (Exception e)
         {
+            Toast.makeText(context, "Database is not connected...", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
         return resultSet;
@@ -62,6 +68,7 @@ e.printStackTrace();
         }
         catch (Exception e)
         {
+            Toast.makeText(context, "Database is not connected...", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

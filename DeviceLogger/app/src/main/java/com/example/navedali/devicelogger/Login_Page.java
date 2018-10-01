@@ -82,8 +82,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     String logged_UserName="";
     String userPassword="";
     String build_SERIAL="";
-    PreparedStatement preparedStatement;
-
     String backupAdminName="aa";
     String backupUserName="bb";
 
@@ -128,7 +126,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         super.onCreate(savedInstanceState);
 
-        databaseMethods = new DatabaseMethods(serverUrl,database);
+        databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
 
         policyManager = new PolicyManager(this);
 
@@ -198,8 +196,13 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         {
             textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
             fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
-            if (timer!=null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
+            try {
+                Thread.sleep(2000);
+            }catch (Exception ex){}
+            System.out.println("VALUE : "+fullscreen_content_logout_controls_horizontal.getVisibility());
+            if (fullscreen_content_logout_controls_horizontal.getVisibility()==View.VISIBLE)
             {
+               Timer timer = new Timer();
                 timer.cancel();
                 timer = null;
             }
@@ -260,7 +263,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public void onStart()
     {
         super.onStart();
-        databaseMethods = new DatabaseMethods(serverUrl,database);
+        databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
     }
 
     @Override
@@ -387,7 +390,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                         break;
                     }
                 }
-                resultSet.close();
             }
             catch(Exception e)
             {
@@ -459,9 +461,12 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         if (editText_confirm_password.getText().toString().equals(userPassword))
         {
-            myTimerTask = new MyTimerTask();
-            timer = new Timer();
-            timer.schedule(myTimerTask, 0);
+            if (timer == null)
+            {
+                myTimerTask = new MyTimerTask();
+                timer = new Timer();
+                timer.schedule(myTimerTask, 10, 10);
+            }
             editText_username.setText("");
             editText_password.setText("");
             editText_confirm_password.setText("");
@@ -498,7 +503,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             timer = null;
         }
         delayedHide(5);
-        databaseMethods = new DatabaseMethods(serverUrl,database);
+        databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
         super.onResume();
     }
 
