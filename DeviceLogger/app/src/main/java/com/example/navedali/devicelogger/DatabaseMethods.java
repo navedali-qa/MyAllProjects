@@ -31,7 +31,7 @@ public class DatabaseMethods
         }
         catch (Exception e)
         {
-
+e.printStackTrace();
         }
     }
 
@@ -46,7 +46,7 @@ public class DatabaseMethods
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         }
         return resultSet;
     }
@@ -62,7 +62,7 @@ public class DatabaseMethods
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         }
     }
 }
