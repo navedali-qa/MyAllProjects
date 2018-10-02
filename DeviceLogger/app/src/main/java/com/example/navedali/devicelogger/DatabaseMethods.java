@@ -17,6 +17,13 @@ import java.util.Properties;
 
 public class DatabaseMethods
 {
+    static
+    {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+    }
+
     Connection connection;
     PreparedStatement preparedStatement;
     Statement statement;
@@ -30,9 +37,6 @@ public class DatabaseMethods
             if(connection==null)
             {
                 System.out.println("START TIME : "+sdf.format(new Date()));
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-                StrictMode.setThreadPolicy(policy);
 
                 Class.forName("com.mysql.jdbc.Driver");
                 Properties prop = new Properties();

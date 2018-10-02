@@ -22,6 +22,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -43,8 +45,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     //DATABASE VARIABLES:
     DatabaseMethods databaseMethods;
     ResultSet resultSet;
-    //String serverUrl="192.168.0.103:3306";
-    String serverUrl="192.168.14.148:3306";
+    String serverUrl="192.168.0.103:3306";
+    //String serverUrl="192.168.14.148:3306";
     String database="360_logica_mobile_logger";
     String userName="";
     String logged_UserName="";
@@ -58,33 +60,33 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     private  MyTimerTask myTimerTask;
     PolicyManager policyManager;
 
+    //Text Box
     public EditText editText_username;
     public EditText editText_password;
-    public Button buttonLogin;
-    public Button buttonProceed;
-    public Button buttonLogout;
+    public EditText editText_confirm_password;
+    public EditText editText_current_password_UpdatePassword;
+    public EditText editText_New_password_UpdatePassword;
+    public EditText editText_New_Confirm_password_UpdatePassword;
 
-    //table details
-    public TableLayout tableLayout_Mobile_Details;
+    //Label
     public TextView table_Name;
     public TextView table_Model;
     public TextView table_Version;
     public TextView table_S_no;
     public TextView table_IMEI_nu;
     public TextView table_start_Time;
-
-    //Time Text View
     public TextView textView_Logged_User;
+    public  TextView textView_Logged_User_UpdatePassword;
 
-    //Logout process
-    public TextView textView_confirm_password;
-    public EditText editText_confirm_password;
-
-    //FRAMES
+    //Frame
     public LinearLayout fullscreen_content_login_controls_horizontal;
     public LinearLayout fullscreen_content_info_controls_horizontal;
     public LinearLayout fullscreen_content_logout_controls_horizontal;
     public LinearLayout fullscreen_content_admin_controls_horizontal;
+    public LinearLayout fullscreen_content_updatePassword_controls_horizontal;
+
+    //Table
+    public TableLayout tableLayout_Mobile_Details;
 
     private final Runnable mHidePart2Runnable = new Runnable()
     {
@@ -142,9 +144,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
         editText_username = (EditText) findViewById(R.id.editText_username);
         editText_password = (EditText) findViewById(R.id.editText_password);
-        buttonLogin = (Button) findViewById(R.id.buttonLogin);
-        buttonProceed = (Button) findViewById(R.id.buttonProceed);
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
+        editText_current_password_UpdatePassword = (EditText) findViewById(R.id.editText_current_password_UpdatePassword);
+        editText_New_password_UpdatePassword = (EditText) findViewById(R.id.editText_New_password_UpdatePassword);
+        editText_New_Confirm_password_UpdatePassword = (EditText) findViewById(R.id.editText_New_Confirm_password_UpdatePassword);
 
         //table details
         tableLayout_Mobile_Details = (TableLayout) findViewById(R.id.tableLayout_Mobile_Details);
@@ -155,9 +157,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         table_IMEI_nu = (TextView) findViewById(R.id.table_IMEI_nu);
         table_start_Time = (TextView) findViewById(R.id.table_start_Time);
         textView_Logged_User = (TextView) findViewById(R.id.textView_Logged_User);
+        textView_Logged_User_UpdatePassword = (TextView) findViewById(R.id.textView_Logged_User_UpdatePassword);
 
         //Logout process
-        textView_confirm_password = (TextView) findViewById(R.id.textView_confirm_password);
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
 
         //FRAMES
@@ -165,9 +167,10 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         fullscreen_content_info_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_info_controls_horizontal);
         fullscreen_content_logout_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_logout_controls_horizontal);
         fullscreen_content_admin_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_admin_controls_horizontal);
+        fullscreen_content_updatePassword_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_updatePassword_controls_horizontal);
 
         updateUIFirstTime();
-
+        resetFields();
     }
 
     public void updateUIFirstTime()
@@ -211,6 +214,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 }
             }});
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
     {
@@ -251,11 +255,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public void onStart()
     {
         super.onStart();
-
-        editText_username.setText("");
-        editText_password.setText("");
-        editText_confirm_password.setText("");
-
+        resetFields();
         databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
     }
 
@@ -283,12 +283,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 editText_username.setText("");
                 editText_password.setText("");
                 fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-                if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-                {
-                    myTimerTask = new MyTimerTask();
-                    timer = new Timer();
-                    timer.schedule(myTimerTask, 5,5);
-                }
+                timerStart();
                 break;
             case R.id.deactivate_admin:
                 if (policyManager.isAdminActive())
@@ -299,12 +294,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 editText_username.setText("");
                 editText_password.setText("");
                 fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-                if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-                {
-                    myTimerTask = new MyTimerTask();
-                    timer = new Timer();
-                    timer.schedule(myTimerTask, 5,5);
-                }
+                timerStart();
                 break;
             case R.id.buttonLogin:
                 runOnUiThread(new Runnable()
@@ -313,12 +303,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     public void run()
                     {
                         loginToAppFunctionality();
-                        if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-                        {
-                            myTimerTask = new MyTimerTask();
-                            timer = new Timer();
-                            timer.schedule(myTimerTask, 5,5);
-                        }
+                        timerStart();
                     }});
                 break;
 
@@ -328,13 +313,11 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     @Override
                     public void run()
                     {
-                        proceedButtonFunctionality();
-                        if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-                        {
-                            myTimerTask = new MyTimerTask();
-                            timer = new Timer();
-                            timer.cancel();
-                        }
+                        proceedButtonFunctionality(true);
+                        myTimerTask = new MyTimerTask();
+                        timer = new Timer();
+                        timer.cancel();
+                        resetFields();
                     }});
                 break;
 
@@ -344,6 +327,39 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     @Override
                     public void run() {
                         logoutButtonFunctionality();
+                    }});
+                break;
+
+            case R.id.button_UpdatePassword:
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            resetFields();
+                            fullscreen_content_logout_controls_horizontal.setVisibility(View.GONE);
+                            textView_Logged_User_UpdatePassword.setText("Logged in User : " + logged_UserName+"\n\n");
+                            fullscreen_content_updatePassword_controls_horizontal.setVisibility(View.VISIBLE);
+                        }});
+                    break;
+
+            case R.id.button_Back_UpdatePassword:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        backButtonFunctionality();
+                    }});
+                break;
+
+            case R.id.button_UpdatePassword_UpdatePassword:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        updatePasswordFunctionality();
                     }});
                 break;
         }
@@ -356,21 +372,21 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                boolean loginAdmin = false;
-                boolean loginUser = false;
-                boolean networkConnected=true;
+                final boolean[] loginAdmin = {false};
+                final boolean[] loginUser = {false};
+                final boolean[] networkConnected = {true};
 
                 if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
                 {
                     Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
                     editText_username.setText("");
                     editText_password.setText("");
-                    networkConnected=false;
+                    networkConnected[0] =false;
                 }
                 else
                 if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
                 {
-                    loginAdmin = true;
+                    loginAdmin[0] = true;
                 }
                 else
                 if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
@@ -378,42 +394,45 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     userName=backupUserName;
                     userPassword=backupUserName;
                     logged_UserName = "Dummy User";
-                    loginUser = true;
-                    networkConnected=false;
+                    loginUser[0] = true;
+                    networkConnected[0] =false;
                 }
                 else
                 {
-                    try
+                    runOnUiThread(new Runnable()
                     {
-                        resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
-                        while (resultSet.next())
-                        {
-                            if (editText_password.getText().toString().equals(resultSet.getString(3))) {
-                                loginAdmin = true;
-                            }
-                            break;
-                        }
-                        if (!loginAdmin)
-                        {
-                            resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
-                            while (resultSet.next()) {
-                                if (editText_password.getText().toString().equals(resultSet.getString(5))) {
-                                    logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                                    userName = resultSet.getString(4);
-                                    userPassword = resultSet.getString(5);
-                                    loginUser = true;
+                        @Override
+                        public void run() {
+                            try
+                            {
+                                resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
+                                while (resultSet.next()) {
+                                    if (editText_password.getText().toString().equals(resultSet.getString(3))) {
+                                        loginAdmin[0] = true;
+                                    }
+                                    break;
                                 }
-                                break;
+                                if (!loginAdmin[0]) {
+                                    resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
+                                    while (resultSet.next()) {
+                                        if (editText_password.getText().toString().equals(resultSet.getString(5))) {
+                                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
+                                            userName = resultSet.getString(4);
+                                            userPassword = resultSet.getString(5);
+                                            loginUser[0] = true;
+                                        }
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
-                        networkConnected=false;
-                    }
+                            catch(Exception e)
+                            {
+                                Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                                networkConnected[0] =false;
+                            }
+                        }});
                 }
-                if (loginAdmin)
+                if (loginAdmin[0])
                 {
                     fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
                     fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
@@ -421,7 +440,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     timer.cancel();
                 }
                 else
-                if (loginUser)
+                if (loginUser[0])
                 {
                     System.out.println("DEVICE DETAILS :\n"
                             + "\nBRAND : " + Build.BRAND
@@ -452,19 +471,17 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 }
                 else
                 {
-                    if(networkConnected)
+                    if(networkConnected[0])
                     {
                         Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     }
-                    editText_username.setText("");
-                    editText_password.setText("");
-                    editText_confirm_password.setText("");
+                    resetFields();
                 }
             }
         });
     }
 
-    public void proceedButtonFunctionality()
+    public void proceedButtonFunctionality(final boolean hide)
     {
         runOnUiThread(new Runnable()
         {
@@ -474,11 +491,13 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
                 fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
                 fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
-                editText_confirm_password.setText("");
+                resetFields();
                 myTimerTask = new MyTimerTask();
                 timer = new Timer();
                 timer.cancel();
-                moveTaskToBack(true);
+                if(hide) {
+                    moveTaskToBack(true);
+                }
             }
         });
     }
@@ -492,17 +511,13 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             {
                 if (editText_confirm_password.getText().toString().equals(userPassword))
                 {
-                    if (timer == null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-                    {
-                        myTimerTask = new MyTimerTask();
-                        timer = new Timer();
-                        timer.schedule(myTimerTask, 10, 10);
-                    }
-                    editText_username.setText("");
-                    editText_password.setText("");
-                    editText_confirm_password.setText("");
+                    myTimerTask = new MyTimerTask();
+                    timer = new Timer();
+                    timer.schedule(myTimerTask, 0);
+                    resetFields();
                     fullscreen_content_logout_controls_horizontal.setVisibility(View.GONE);
                     fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
                     String query = "UPDATE `login_info` SET `End_Time` = \"" + sdf.format(new Date()) + "\" WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" AND `UserName`=\"" + userName + "\" AND `End_Time`=\"LOCKED\"";
@@ -526,6 +541,65 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         });
     }
 
+    public void backButtonFunctionality()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                fullscreen_content_updatePassword_controls_horizontal.setVisibility(View.GONE);
+                proceedButtonFunctionality(false);
+                resetFields();
+            }});
+    }
+
+    public void updatePasswordFunctionality()
+    {
+        runOnUiThread(new Runnable()
+        {
+            public EditText editText_current_password_UpdatePassword = (EditText) findViewById(R.id.editText_current_password_UpdatePassword);
+            public EditText editText_New_password_UpdatePassword = (EditText) findViewById(R.id.editText_New_password_UpdatePassword);
+            public EditText editText_New_Confirm_password_UpdatePassword = (EditText) findViewById(R.id.editText_New_Confirm_password_UpdatePassword);
+            @Override
+            public void run()
+            {
+                if (editText_current_password_UpdatePassword.getText().toString().trim().equals("") || editText_New_password_UpdatePassword.getText().toString().trim().equals("") || editText_New_Confirm_password_UpdatePassword.getText().toString().trim().equals(""))
+                {
+                    Toast.makeText(Login_Page.this, "Please fill all details", Toast.LENGTH_SHORT).show();
+                    editText_current_password_UpdatePassword.setText("");
+                    editText_New_password_UpdatePassword.setText("");
+                    editText_New_Confirm_password_UpdatePassword.setText("");
+                }
+                else
+                    if(!editText_current_password_UpdatePassword.getText().toString().equals(userPassword))
+                    {
+                        Toast.makeText(Login_Page.this, "Please enter correct current password", Toast.LENGTH_SHORT).show();
+                        editText_current_password_UpdatePassword.setText("");
+                        editText_New_password_UpdatePassword.setText("");
+                        editText_New_Confirm_password_UpdatePassword.setText("");
+                    }
+                else
+                    if(!editText_New_password_UpdatePassword.getText().toString().equals(editText_New_Confirm_password_UpdatePassword.getText().toString()))
+                    {
+                        Toast.makeText(Login_Page.this, "New & confirm password doesn't match", Toast.LENGTH_SHORT).show();
+                        editText_current_password_UpdatePassword.setText("");
+                        editText_New_password_UpdatePassword.setText("");
+                        editText_New_Confirm_password_UpdatePassword.setText("");
+                    }
+                else
+                {
+                    String query = "UPDATE `users` SET `Password` = \"" + editText_New_Confirm_password_UpdatePassword.getText().toString() + "\" WHERE `UserName`=\"" + userName + "\"";
+                    System.out.println(query);
+                    databaseMethods.insertUpdateValue(query);
+                    userPassword=editText_New_Confirm_password_UpdatePassword.getText().toString();
+                    resetFields();
+                    backButtonFunctionality();
+                    Toast.makeText(Login_Page.this, "Password Updated", Toast.LENGTH_SHORT).show();
+                }
+            }});
+    }
+
     //DISABLE ANDROID BUTTONS
     @Override
     protected void onResume()
@@ -536,12 +610,10 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             timer.cancel();
             timer = null;
         }
-        delayedHide(5);
-        databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
 
-        editText_username.setText("");
-        editText_password.setText("");
-        editText_confirm_password.setText("");
+        delayedHide(5);
+
+        resetFields();
 
         super.onResume();
     }
@@ -549,13 +621,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onPause()
     {
-        if (timer == null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
-        {
-            myTimerTask = new MyTimerTask();
-            timer = new Timer();
-            timer.schedule(myTimerTask, 10, 10);
-        }
-
+        timerStart();
         super.onPause();
     }
 
@@ -601,6 +667,30 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onBackPressed(){}
+
+    public void resetFields()
+    {
+        editText_username.setText("");
+        editText_password.setText("");
+        editText_confirm_password.setText("");
+        editText_current_password_UpdatePassword.setText("");
+        editText_New_password_UpdatePassword.setText("");
+        editText_New_Confirm_password_UpdatePassword.setText("");
+    }
+
+    public void timerStart()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() {
+                if (timer == null && fullscreen_content_logout_controls_horizontal.getVisibility() == View.GONE) {
+                    myTimerTask = new MyTimerTask();
+                    timer = new Timer();
+                    timer.schedule(myTimerTask, 5, 5);
+                }
+            }});
+    }
 
     private void bringApplicationToFront()
     {
