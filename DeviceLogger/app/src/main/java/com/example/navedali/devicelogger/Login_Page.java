@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,19 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     private static final int UI_ANIMATION_DELAY = 5;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+
+    //DATABASE VARIABLES:
+    DatabaseMethods databaseMethods;
+    ResultSet resultSet;
+    //String serverUrl="192.168.0.103:3306";
+    String serverUrl="192.168.14.148:3306";
+    String database="360_logica_mobile_logger";
+    String userName="";
+    String logged_UserName="";
+    String userPassword="";
+    String build_SERIAL="";
+    String backupAdminName="aa";
+    String backupUserName="bb";
 
     //Custom Variable
     private Timer timer;
@@ -71,19 +85,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public LinearLayout fullscreen_content_info_controls_horizontal;
     public LinearLayout fullscreen_content_logout_controls_horizontal;
     public LinearLayout fullscreen_content_admin_controls_horizontal;
-
-    //DATABASE VARIABLES:
-    DatabaseMethods databaseMethods;
-    ResultSet resultSet;
-    //String serverUrl="192.168.0.105:3306";
-    String serverUrl="192.168.14.148:3306";
-    String database="360_logica_mobile_logger";
-    String userName="";
-    String logged_UserName="";
-    String userPassword="";
-    String build_SERIAL="";
-    String backupAdminName="aa";
-    String backupUserName="bb";
 
     private final Runnable mHidePart2Runnable = new Runnable()
     {
@@ -165,54 +166,51 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         fullscreen_content_logout_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_logout_controls_horizontal);
         fullscreen_content_admin_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_admin_controls_horizontal);
 
-        boolean found=false;
+        updateUIFirstTime();
 
-        try
-        {
-
-            resultSet = databaseMethods.executeQuery("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
-            while (resultSet.next())
-            {
-                userName = resultSet.getString(2);
-                found=true;
-                break;
-            }
-            if(found)
-            {
-                resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + userName + "'");
-                while (resultSet.next())
-                {
-                    logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                    userPassword = resultSet.getString(5);
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        if(found)
-        {
-            textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
-            fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
-            try {
-                Thread.sleep(2000);
-            }catch (Exception ex){}
-            System.out.println("VALUE : "+fullscreen_content_logout_controls_horizontal.getVisibility());
-            if (fullscreen_content_logout_controls_horizontal.getVisibility()==View.VISIBLE)
-            {
-               Timer timer = new Timer();
-                timer.cancel();
-                timer = null;
-            }
-        }
-        else
-        {
-            fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-        }
     }
 
+    public void updateUIFirstTime()
+    {
+        runOnUiThread(new Runnable()
+        {
+            boolean found=false;
+            @Override
+            public void run()
+            {
+                try {
+
+                    resultSet = databaseMethods.executeQuery("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
+                    while (resultSet.next()) {
+                        userName = resultSet.getString(2);
+                        found = true;
+                        break;
+                    }
+                    if (found) {
+                        resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + userName + "'");
+                        while (resultSet.next()) {
+                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
+                            userPassword = resultSet.getString(5);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (found) {
+                    textView_Logged_User.setText("Logged in User : " + logged_UserName + "\n\n");
+                    fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
+                    if (fullscreen_content_logout_controls_horizontal.getVisibility() == View.VISIBLE) {
+                        Timer timer = new Timer();
+                        timer.cancel();
+                        timer = null;
+                    }
+                } else {
+                    fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+                    updateRecentlyUserTable();
+                }
+            }});
+    }
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
     {
@@ -243,16 +241,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
     }
 
-    /*@SuppressLint("InlinedApi")
-    private void show()
-    {
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }*/
-
     private void delayedHide(int delayMillis)
     {
         mHideHandler.removeCallbacks(mHideRunnable);
@@ -263,6 +251,11 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public void onStart()
     {
         super.onStart();
+
+        editText_username.setText("");
+        editText_password.setText("");
+        editText_confirm_password.setText("");
+
         databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
     }
 
@@ -290,11 +283,11 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 editText_username.setText("");
                 editText_password.setText("");
                 fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-                if(timer==null)
+                if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
                 {
                     myTimerTask = new MyTimerTask();
                     timer = new Timer();
-                    timer.schedule(myTimerTask, 0);
+                    timer.schedule(myTimerTask, 5,5);
                 }
                 break;
             case R.id.deactivate_admin:
@@ -306,190 +299,231 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 editText_username.setText("");
                 editText_password.setText("");
                 fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-                if(timer==null)
+                if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
                 {
                     myTimerTask = new MyTimerTask();
                     timer = new Timer();
-                    timer.schedule(myTimerTask, 0);
+                    timer.schedule(myTimerTask, 5,5);
                 }
                 break;
             case R.id.buttonLogin:
-                loginToAppFunctionality();
-                if(timer==null)
+                runOnUiThread(new Runnable()
                 {
-                    myTimerTask = new MyTimerTask();
-                    timer = new Timer();
-                    timer.schedule(myTimerTask, 0);
-                }
+                    @Override
+                    public void run()
+                    {
+                        loginToAppFunctionality();
+                        if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
+                        {
+                            myTimerTask = new MyTimerTask();
+                            timer = new Timer();
+                            timer.schedule(myTimerTask, 5,5);
+                        }
+                    }});
                 break;
 
             case R.id.buttonProceed:
-                proceedButtonFunctionality();
-                if(timer==null)
+                runOnUiThread(new Runnable()
                 {
-                    myTimerTask = new MyTimerTask();
-                    timer = new Timer();
-                    timer.cancel();
-                }
+                    @Override
+                    public void run()
+                    {
+                        proceedButtonFunctionality();
+                        if(timer==null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
+                        {
+                            myTimerTask = new MyTimerTask();
+                            timer = new Timer();
+                            timer.cancel();
+                        }
+                    }});
                 break;
 
             case R.id.buttonLogout:
-                logoutButtonFunctionality();
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        logoutButtonFunctionality();
+                    }});
                 break;
         }
     }
 
     public void loginToAppFunctionality()
     {
-        boolean loginAdmin = false;
-        boolean loginUser = false;
-        boolean networkConnected=true;
-
-        if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
+        runOnUiThread(new Runnable()
         {
-            loginAdmin = true;
-        }
-        else
-        if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
-        {
-            userName=backupUserName;
-            userPassword=backupUserName;
-            logged_UserName = "Dummy User";
-            loginUser = true;
-            networkConnected=true;
-        }
-        else
-        if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
-        {
-            Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
-            editText_username.setText("");
-            editText_password.setText("");
-        }
-        else
-        {
-            try
+            @Override
+            public void run()
             {
-                resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
-                while (resultSet.next())
+                boolean loginAdmin = false;
+                boolean loginUser = false;
+                boolean networkConnected=true;
+
+                if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
                 {
-                    if (editText_password.getText().toString().equals(resultSet.getString(3))) {
-                        loginAdmin = true;
-                    }
-                    break;
+                    Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
+                    editText_username.setText("");
+                    editText_password.setText("");
+                    networkConnected=false;
                 }
-                if (!loginAdmin)
+                else
+                if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
                 {
-                    resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
-                    while (resultSet.next()) {
-                        if (editText_password.getText().toString().equals(resultSet.getString(5))) {
-                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                            userName = resultSet.getString(4);
-                            userPassword = resultSet.getString(5);
-                            loginUser = true;
+                    loginAdmin = true;
+                }
+                else
+                if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
+                {
+                    userName=backupUserName;
+                    userPassword=backupUserName;
+                    logged_UserName = "Dummy User";
+                    loginUser = true;
+                    networkConnected=false;
+                }
+                else
+                {
+                    try
+                    {
+                        resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
+                        while (resultSet.next())
+                        {
+                            if (editText_password.getText().toString().equals(resultSet.getString(3))) {
+                                loginAdmin = true;
+                            }
+                            break;
                         }
-                        break;
+                        if (!loginAdmin)
+                        {
+                            resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
+                            while (resultSet.next()) {
+                                if (editText_password.getText().toString().equals(resultSet.getString(5))) {
+                                    logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
+                                    userName = resultSet.getString(4);
+                                    userPassword = resultSet.getString(5);
+                                    loginUser = true;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                        networkConnected=false;
                     }
                 }
-            }
-            catch(Exception e)
-            {
-                Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
-                networkConnected=false;
-            }
-        }
-        if (loginAdmin)
-        {
-            fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-            fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
-            timer = new Timer();
-            timer.cancel();
-        }
-        else
-        if (loginUser)
-        {
-            System.out.println("DEVICE DETAILS :\n"
-                    + "\nBRAND : " + Build.BRAND
-                    + "\nMODEL : " + Build.MODEL
-                    + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
-                    + "\nVERIONS PRODUCT : " + Build.PRODUCT
-                    + "\nSERIAL : " + Build.SERIAL
-                    + "\nID : " + Build.VERSION.RELEASE
-                    + "\nMANUFACTURER : " + Build.MANUFACTURER);
+                if (loginAdmin)
+                {
+                    fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+                    fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
+                    timer = new Timer();
+                    timer.cancel();
+                }
+                else
+                if (loginUser)
+                {
+                    System.out.println("DEVICE DETAILS :\n"
+                            + "\nBRAND : " + Build.BRAND
+                            + "\nMODEL : " + Build.MODEL
+                            + "\nVERIONS SDK_INT : " + Build.VERSION.SDK_INT
+                            + "\nVERIONS PRODUCT : " + Build.PRODUCT
+                            + "\nSERIAL : " + Build.SERIAL
+                            + "\nID : " + Build.VERSION.RELEASE
+                            + "\nMANUFACTURER : " + Build.MANUFACTURER);
 
-            table_Name.setText(Build.BRAND);
-            table_Model.setText(Build.MODEL);
-            table_Version.setText(Build.VERSION.RELEASE);
-            build_SERIAL = Build.SERIAL;
-            table_S_no.setText(build_SERIAL);
-            table_IMEI_nu.setText("XXXX");
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            table_start_Time.setText(sdf.format(new Date()));
-            build_SERIAL=Build.SERIAL;
-            fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
-            fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
-            if(userName!=backupUserName)
-            {
-                sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
-                databaseMethods.insertUpdateValue(query);
+                    table_Name.setText(Build.BRAND);
+                    table_Model.setText(Build.MODEL);
+                    table_Version.setText(Build.VERSION.RELEASE);
+                    build_SERIAL = Build.SERIAL;
+                    table_S_no.setText(build_SERIAL);
+                    table_IMEI_nu.setText("XXXX");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                    table_start_Time.setText(sdf.format(new Date()));
+                    build_SERIAL=Build.SERIAL;
+                    fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
+                    fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
+                    if(userName!=backupUserName)
+                    {
+                        sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
+                        databaseMethods.insertUpdateValue(query);
+                    }
+                }
+                else
+                {
+                    if(networkConnected)
+                    {
+                        Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    }
+                    editText_username.setText("");
+                    editText_password.setText("");
+                    editText_confirm_password.setText("");
+                }
             }
-        }
-        else
-        {
-            if(networkConnected)
-            {
-                Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-            }
-            editText_username.setText("");
-            editText_password.setText("");
-        }
+        });
     }
 
     public void proceedButtonFunctionality()
     {
-        textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
-        fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
-        fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
-        editText_confirm_password.setText("");
-        myTimerTask = new MyTimerTask();
-        timer = new Timer();
-        timer.cancel();
-        moveTaskToBack(true);
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
+                fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
+                fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
+                editText_confirm_password.setText("");
+                myTimerTask = new MyTimerTask();
+                timer = new Timer();
+                timer.cancel();
+                moveTaskToBack(true);
+            }
+        });
     }
 
     public void logoutButtonFunctionality()
     {
-        if (editText_confirm_password.getText().toString().equals(userPassword))
+        runOnUiThread(new Runnable()
         {
-            if (timer == null)
+            @Override
+            public void run()
             {
-                myTimerTask = new MyTimerTask();
-                timer = new Timer();
-                timer.schedule(myTimerTask, 10, 10);
-            }
-            editText_username.setText("");
-            editText_password.setText("");
-            editText_confirm_password.setText("");
-            fullscreen_content_logout_controls_horizontal.setVisibility(View.GONE);
-            fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                if (editText_confirm_password.getText().toString().equals(userPassword))
+                {
+                    if (timer == null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
+                    {
+                        myTimerTask = new MyTimerTask();
+                        timer = new Timer();
+                        timer.schedule(myTimerTask, 10, 10);
+                    }
+                    editText_username.setText("");
+                    editText_password.setText("");
+                    editText_confirm_password.setText("");
+                    fullscreen_content_logout_controls_horizontal.setVisibility(View.GONE);
+                    fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-            String query = "UPDATE `login_info` SET `End_Time` = \"" + sdf.format(new Date()) + "\" WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" AND `UserName`=\"" + userName + "\" AND `End_Time`=\"LOCKED\"";
-            System.out.println(query);
-            databaseMethods.insertUpdateValue(query);
-            userName="";
-        }
-        else
-        if (editText_confirm_password.getText().toString().trim().equals(""))
-        {
-            Toast.makeText(Login_Page.this, "Please enter password to logout", Toast.LENGTH_SHORT).show();
-            editText_confirm_password.setText("");
-        }
-        else
-        {
-            Toast.makeText(Login_Page.this, "Please enter correct password to logout", Toast.LENGTH_SHORT).show();
-            editText_confirm_password.setText("");
-        }
+                    String query = "UPDATE `login_info` SET `End_Time` = \"" + sdf.format(new Date()) + "\" WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" AND `UserName`=\"" + userName + "\" AND `End_Time`=\"LOCKED\"";
+                    System.out.println(query);
+                    databaseMethods.insertUpdateValue(query);
+                    userName="";
+                    updateRecentlyUserTable();
+                }
+                else
+                if (editText_confirm_password.getText().toString().trim().equals(""))
+                {
+                    Toast.makeText(Login_Page.this, "Please enter password to logout", Toast.LENGTH_SHORT).show();
+                    editText_confirm_password.setText("");
+                }
+                else
+                {
+                    Toast.makeText(Login_Page.this, "Please enter correct password to logout", Toast.LENGTH_SHORT).show();
+                    editText_confirm_password.setText("");
+                }
+            }
+        });
     }
 
     //DISABLE ANDROID BUTTONS
@@ -504,13 +538,18 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         }
         delayedHide(5);
         databaseMethods = new DatabaseMethods(Login_Page.this,serverUrl,database);
+
+        editText_username.setText("");
+        editText_password.setText("");
+        editText_confirm_password.setText("");
+
         super.onResume();
     }
 
     @Override
     protected void onPause()
     {
-        if (timer == null)
+        if (timer == null && fullscreen_content_logout_controls_horizontal.getVisibility()==View.GONE)
         {
             myTimerTask = new MyTimerTask();
             timer = new Timer();
@@ -519,6 +558,49 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
         super.onPause();
     }
+
+    public void updateRecentlyUserTable()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                String lastUser = "";
+                TextView table_User_Name1 = (TextView) findViewById(R.id.table_User_Name1);
+                TextView table_Separator = (TextView) findViewById(R.id.table_Separator);
+                TextView table_Start_Time1 = (TextView) findViewById(R.id.table_Start_Time1);
+                TextView table_Separator1 = (TextView) findViewById(R.id.table_Separator1);
+                TextView table_End_Time1 = (TextView) findViewById(R.id.table_End_Time1);
+
+                table_User_Name1.setText("");
+                table_Separator.setText("");
+                table_Start_Time1.setText("");
+                table_Separator1.setText("");
+                table_End_Time1.setText("");
+                try {
+                    resultSet = databaseMethods.executeQuery("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
+                    while (resultSet.next()) {
+                        ResultSet resultSet1 = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + resultSet.getString(1) + "'");
+                        while (resultSet1.next()) {
+                            lastUser = resultSet1.getString(2) + " " + resultSet1.getString(3);
+                            table_User_Name1.setText(table_User_Name1.getText() + lastUser + " \t\n");
+                            table_Separator.setText(table_Separator.getText() + " |\t\n");
+                            table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "\t\n");
+                            table_Separator1.setText(table_Separator1.getText() + " |\t\n");
+                            table_End_Time1.setText(table_End_Time1.getText() + resultSet.getString(3) + "\t\n");
+                        }
+                    }
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            });
+    }
+
+    @Override
+    public void onBackPressed(){}
 
     private void bringApplicationToFront()
     {
@@ -535,9 +617,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void onBackPressed(){}
 
     class MyTimerTask extends TimerTask
     {

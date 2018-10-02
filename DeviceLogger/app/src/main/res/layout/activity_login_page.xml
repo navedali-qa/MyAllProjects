@@ -153,6 +153,137 @@
                     android:onClick="onClick"
                     android:visibility="visible" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    android:text="\n\nLast logged in user details\n" />
+
+                <TableLayout
+
+                    android:id="@+id/tableLayout_LoggedIn_Details"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:visibility="visible">
+
+                    <TableRow
+
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="1"
+                            android:text=" User Name \t"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="13dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:text="  | \t"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="13dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="3"
+                            android:text=" Start Time "
+                            android:gravity="center"
+                            android:textSize="13dp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="4"
+                            android:text="  | \t"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="13dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="5"
+                            android:text=" End Time "
+                            android:gravity="center"
+                            android:textSize="13dp"
+                            android:textStyle="bold"/>
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/table_User_Name1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="1"
+                            android:text=""
+                            android:gravity="center"
+                            android:textSize="11dp"
+                            android:visibility="visible"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/table_Separator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="2"
+                            android:gravity="center"
+                            android:text=""
+                            android:visibility="visible"
+                            android:textSize="11dp"/>
+
+                        <TextView
+                            android:id="@+id/table_Start_Time1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="3"
+                            android:gravity="center"
+                            android:text=""
+                            android:textSize="11dp"
+                            android:visibility="visible"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/table_Separator1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_column="4"
+                            android:gravity="center"
+                            android:text=""
+                            android:visibility="visible"
+                            android:textSize="11dp"/>
+
+                        <TextView
+                            android:id="@+id/table_End_Time1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_column="5"
+                            android:text=""
+                            android:textSize="11dp"
+                            android:visibility="visible"
+                            android:textStyle="normal" />
+
+                    </TableRow>
+
+                </TableLayout>
+
             </LinearLayout>
 
         </LinearLayout>
