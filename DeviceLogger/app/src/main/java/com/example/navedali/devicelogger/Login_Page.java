@@ -8,27 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.StrictMode;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -45,8 +35,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     //DATABASE VARIABLES:
     DatabaseMethods databaseMethods;
     ResultSet resultSet;
-    String serverUrl="192.168.0.103:3306";
-    //String serverUrl="192.168.14.148:3306";
+    //String serverUrl="192.168.0.103:3306";
+    String serverUrl="192.168.14.148:3306";
     String database="360_logica_mobile_logger";
     String userName="";
     String logged_UserName="";
@@ -57,7 +47,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
     //Custom Variable
     private Timer timer;
-    private  MyTimerTask myTimerTask;
+    private MyTimerTask myTimerTask;
     PolicyManager policyManager;
 
     //Text Box
