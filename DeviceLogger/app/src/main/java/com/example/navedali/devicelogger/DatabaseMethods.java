@@ -28,7 +28,17 @@ public class DatabaseMethods
     PreparedStatement preparedStatement;
     Statement statement;
     Context context;
+    String serverUrl;
+    String database;
+
     public DatabaseMethods(Context context, String serverUrl, String database)
+    {
+        this.context=context;
+        this.serverUrl=serverUrl;
+        this.database = database;
+    }
+
+    public Connection getConnection()
     {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         try
@@ -40,7 +50,7 @@ public class DatabaseMethods
 
                 Class.forName("com.mysql.jdbc.Driver");
                 Properties prop = new Properties();
-                prop.put("connectTimeout","5000");
+                prop.put("connectTimeout","10000");
                 String connectionString = "jdbc:mysql://"+serverUrl+"/"+database+"?user=root&password=";
                 connection = (Connection) DriverManager.getConnection(connectionString,prop);
                 //connection = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "",prop);
@@ -52,6 +62,7 @@ public class DatabaseMethods
             e.printStackTrace();
             System.out.println("END TIME : "+sdf.format(new Date()));
         }
+        return connection;
     }
 
     public ResultSet executeQuery(String query)
@@ -59,6 +70,7 @@ public class DatabaseMethods
         ResultSet resultSet=null;
         try
         {
+            connection = getConnection();
             statement = connection.createStatement();
             resultSet = (ResultSet) statement.executeQuery(query);
            // statement.close();
@@ -75,6 +87,7 @@ public class DatabaseMethods
     {
         try
         {
+            connection = getConnection();
             preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.execute();

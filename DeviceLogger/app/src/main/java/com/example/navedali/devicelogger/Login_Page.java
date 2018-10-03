@@ -623,24 +623,41 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 String lastUser = "";
-                TextView table_User_Name1 = (TextView) findViewById(R.id.table_User_Name1);
+                TextView table_User_Id = (TextView) findViewById(R.id.table_User_Id);
                 TextView table_Separator = (TextView) findViewById(R.id.table_Separator);
                 TextView table_Start_Time1 = (TextView) findViewById(R.id.table_Start_Time1);
                 TextView table_Separator1 = (TextView) findViewById(R.id.table_Separator1);
                 TextView table_End_Time1 = (TextView) findViewById(R.id.table_End_Time1);
 
-                table_User_Name1.setText("");
+                table_User_Id.setText("");
                 table_Separator.setText("");
                 table_Start_Time1.setText("");
                 table_Separator1.setText("");
                 table_End_Time1.setText("");
                 try {
+                    /*resultSet = databaseMethods.executeQuery("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
+                    while (resultSet.next())
+                    {
+                        ResultSet resultSet1 = databaseMethods.executeQuery("SELECT UserId FROM users WHERE Username='" + resultSet.getString(1) + "'");
+                        while (resultSet1.next())
+                        {
+                            table_User_Id.setText(table_User_Id.getText() + resultSet1.getString(1) + " \t\n");
+                            table_Separator.setText(table_Separator.getText() + " |\t\n");
+                            table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "\t\n");
+                            table_Separator1.setText(table_Separator1.getText() + " |\t\n");
+                            table_End_Time1.setText(table_End_Time1.getText() + resultSet.getString(3) + "\t\n");
+                        }
+                    }*/
+                    System.out.println("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
                     resultSet = databaseMethods.executeQuery("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
-                    while (resultSet.next()) {
+                    while (resultSet.next())
+                    {
                         ResultSet resultSet1 = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + resultSet.getString(1) + "'");
-                        while (resultSet1.next()) {
+                        while (resultSet1.next())
+                        {
+                            System.out.println(lastUser+"\t"+resultSet.getString(2)+"\t"+resultSet.getString(3));
                             lastUser = resultSet1.getString(2) + " " + resultSet1.getString(3);
-                            table_User_Name1.setText(table_User_Name1.getText() + lastUser + " \t\n");
+                            table_User_Id.setText(table_User_Id.getText() + lastUser + " \t\n");
                             table_Separator.setText(table_Separator.getText() + " |\t\n");
                             table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "\t\n");
                             table_Separator1.setText(table_Separator1.getText() + " |\t\n");
