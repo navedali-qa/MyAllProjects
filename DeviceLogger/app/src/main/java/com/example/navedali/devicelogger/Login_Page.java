@@ -36,7 +36,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     DatabaseMethods databaseMethods;
     ResultSet resultSet;
     //String serverUrl="192.168.0.103:3306";
-    String serverUrl="192.168.14.148:3306";
+    //String serverUrl="192.168.14.148:3306";
+    String serverUrl="10.148.1.66:3306";
     String database="360_logica_mobile_logger";
     String userName="";
     String logged_UserName="";
