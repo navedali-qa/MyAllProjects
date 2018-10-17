@@ -24,8 +24,7 @@
         android:keepScreenOn="true"
         android:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_appinfo_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_appinfo_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -61,8 +60,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Mobile Inventory App\n"
+                    android:text="Mobile Inventory App"
                     android:textSize="35dp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/textView_ProjectInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="\nProject : "
+                    android:textSize="23dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
@@ -70,8 +79,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_login_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_login_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -94,10 +102,9 @@
                     android:text="@string/dummy_username_text"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textDirection="ltr"
-                    android:textSize="18sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
-                    android:visibility="visible"
-                    tools:text="\n\n\nEnter userName" />
+                    android:visibility="visible" />
 
                 <EditText
                     android:id="@+id/editText_username"
@@ -145,143 +152,11 @@
                     android:text="Login"
                     android:visibility="visible" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="\nLast logged in user details\n"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
-
-                <TableLayout
-
-                    android:id="@+id/tableLayout_LoggedIn_Details"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:visibility="visible">
-
-                    <TableRow
-
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:gravity="center"
-                            android:text=" User Name \t"
-                            android:textSize="13dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:gravity="center"
-                            android:text="  | \t"
-                            android:textSize="13dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="3"
-                            android:gravity="center"
-                            android:text=" Start Time "
-                            android:textSize="13dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="4"
-                            android:gravity="center"
-                            android:text="  | \t"
-                            android:textSize="13dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="5"
-                            android:gravity="center"
-                            android:text=" End Time "
-                            android:textSize="13dp"
-                            android:textStyle="bold" />
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:visibility="visible">
-
-                        <TextView
-                            android:id="@+id/table_User_Id"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:gravity="center"
-                            android:text=""
-                            android:textSize="11dp"
-                            android:textStyle="normal"
-                            android:visibility="visible" />
-
-                        <TextView
-                            android:id="@+id/table_Separator"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:gravity="center"
-                            android:text=""
-                            android:textSize="11dp"
-                            android:visibility="visible" />
-
-                        <TextView
-                            android:id="@+id/table_Start_Time1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="3"
-                            android:gravity="center"
-                            android:text=""
-                            android:textSize="11dp"
-                            android:textStyle="normal"
-                            android:visibility="visible" />
-
-                        <TextView
-                            android:id="@+id/table_Separator1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="4"
-                            android:gravity="center"
-                            android:text=""
-                            android:textSize="11dp"
-                            android:visibility="visible" />
-
-                        <TextView
-                            android:id="@+id/table_End_Time1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="5"
-                            android:gravity="center"
-                            android:text=""
-                            android:textSize="11dp"
-                            android:textStyle="normal"
-                            android:visibility="visible" />
-
-                    </TableRow>
-
-                </TableLayout>
-
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_info_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_info_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -301,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="\nMobile Details\n"
+                    android:text="Last logged in user details\n"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="30dp"
@@ -309,179 +184,167 @@
                     android:visibility="visible"
                     tools:text="Mobile Details" />
 
-                <TableLayout
-                    android:id="@+id/tableLayout_Mobile_Details"
-                    android:layout_width="match_parent"
+                <ScrollView
+                    android:id="@+id/layout"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:visibility="visible">
+                    android:scrollbars="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="5dip"
+                    android:scrollbarStyle="outsideInset"
+                    android:fillViewport="true">
 
-                    <TableRow
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalView"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="5dip">
 
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                        <TableLayout
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   Name :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
+                            android:id="@+id/tableLayout_LoggedIn_Details"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:visibility="visible">
 
-                        <TextView
-                            android:id="@+id/table_Name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   Name"
-                            android:textSize="15sp"
-                            android:textStyle="normal" />
+                            <TableRow
 
-                    </TableRow>
+                                android:layout_width="match_parent"
+                                android:layout_height="fill_parent">
 
-                    <TableRow
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="1"
+                                    android:gravity="center"
+                                    android:text=" S. No. \t"
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="2"
+                                    android:gravity="center"
+                                    android:text=" User Name \t"
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   Model :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="3"
+                                    android:gravity="center"
+                                    android:text="   | \t"
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/table_Model"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   Model"
-                            android:textSize="15sp"
-                            android:textStyle="normal" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="4"
+                                    android:gravity="center"
+                                    android:text=" Start Time "
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                    </TableRow>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="5"
+                                    android:gravity="center"
+                                    android:text="   | \t"
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                    <TableRow
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="6"
+                                    android:gravity="center"
+                                    android:text=" End Time "
+                                    android:textSize="18dp"
+                                    android:textStyle="bold" />
 
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                            </TableRow>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   Version :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
+                            <TableRow
+                                android:layout_width="match_parent"
+                                android:layout_height="fill_parent"
+                                android:visibility="visible">
 
-                        <TextView
-                            android:id="@+id/table_Version"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   Version"
-                            android:textSize="15dp"
-                            android:textStyle="normal" />
+                                <TextView
+                                    android:id="@+id/table_User_SNo"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="1"
+                                    android:gravity="center"
+                                    android:text=" 1 \n 2 \n 3 \n 4 \n 5 "
+                                    android:textSize="14dp"
+                                    android:textStyle="normal"
+                                    android:visibility="visible" />
 
-                    </TableRow>
+                                <TextView
+                                    android:id="@+id/table_User_Name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="2"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textSize="14dp"
+                                    android:textStyle="normal"
+                                    android:visibility="visible" />
 
-                    <TableRow
+                                <TextView
+                                    android:id="@+id/table_Separator"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="3"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textSize="14dp"
+                                    android:visibility="visible" />
 
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                                <TextView
+                                    android:id="@+id/table_Start_Time1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="4"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textSize="14dp"
+                                    android:textStyle="normal"
+                                    android:visibility="visible" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   S.no :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
+                                <TextView
+                                    android:id="@+id/table_Separator1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="5"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textSize="14dp"
+                                    android:visibility="visible" />
 
-                        <TextView
-                            android:id="@+id/table_S_no"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   S.no "
-                            android:textSize="15dp"
-                            android:textStyle="normal" />
+                                <TextView
+                                    android:id="@+id/table_End_Time1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_column="6"
+                                    android:gravity="center"
+                                    android:text=""
+                                    android:textSize="14dp"
+                                    android:textStyle="normal"
+                                    android:visibility="visible" />
 
-                    </TableRow>
+                            </TableRow>
 
-                    <TableRow
+                        </TableLayout>
 
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
+                    </HorizontalScrollView>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   IMEI nu. :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/table_IMEI_nu"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   IMEI nu."
-                            android:textSize="15dp"
-                            android:textStyle="normal" />
-
-                    </TableRow>
-
-                    <TableRow
-
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:text="   Start time :   "
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/table_start_Time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:text="   Start time."
-                            android:textSize="15dp"
-                            android:textStyle="normal" />
-
-                    </TableRow>
-
-                    <TableRow
-
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="1"
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:textSize="15dp"
-                            android:textStyle="normal" />
-
-                    </TableRow>
-
-                </TableLayout>
+                </ScrollView>
 
                 <Button
                     android:id="@+id/buttonProceed"
@@ -496,8 +359,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_logout_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_logout_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -548,157 +410,14 @@
                     android:textStyle="bold"
                     android:visibility="visible" />
 
-                <LinearLayout
+                <Button
+                    android:id="@+id/buttonLogout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:orientation="horizontal"
-                    tools:ignore="UselessParent">
-
-                    <Button
-                        android:id="@+id/button_UpdatePassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:onClick="onClick"
-                        android:text="Update Password"
-                        android:visibility="visible" />
-
-                    <Button
-                        android:id="@+id/buttonLogout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:onClick="onClick"
-                        android:text="LogOut"
-                        android:visibility="visible" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fullscreen_content_updatePassword_controls_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            tools:ignore="UselessParent">
-
-            <LinearLayout
-                android:id="@+id/fullscreen_content_fullscreen_content_updatePassword_controls_horizontal_controls_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                tools:ignore="UselessParent">
-
-                <TextView
-                    android:id="@+id/textView_Logged_User_UpdatePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Hi"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:onClick="onClick"
+                    android:text="LogOut"
                     android:visibility="visible" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Current Password"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
-
-                <EditText
-                    android:id="@+id/editText_current_password_UpdatePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ems="10"
-                    android:inputType="textPassword"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="15dp"
-                    android:visibility="visible" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Enter new password"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
-
-                <EditText
-                    android:id="@+id/editText_New_password_UpdatePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ems="10"
-                    android:inputType="textPassword"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="15dp"
-                    android:visibility="visible" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Confirm new password"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
-
-                <EditText
-                    android:id="@+id/editText_New_Confirm_password_UpdatePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ems="10"
-                    android:inputType="textPassword"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="15dp"
-                    android:visibility="visible" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal"
-                    tools:ignore="UselessParent">
-
-                    <Button
-                        android:id="@+id/button_Back_UpdatePassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:onClick="onClick"
-                        android:text="Back"
-                        android:visibility="visible" />
-
-                    <Button
-                        android:id="@+id/button_UpdatePassword_UpdatePassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:onClick="onClick"
-                        android:text="Update Password"
-                        android:visibility="visible" />
-
-                </LinearLayout>
 
             </LinearLayout>
 
