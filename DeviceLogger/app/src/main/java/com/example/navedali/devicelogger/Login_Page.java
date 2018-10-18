@@ -3,6 +3,7 @@ package com.example.navedali.devicelogger;
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
+import android.app.admin.DeviceAdminInfo;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +39,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     DatabaseMethods databaseMethods;
     ResultSet resultSet;
     //String serverUrl="192.168.0.103:3306";
-    String serverUrl="192.168.0.109:3306";
-    //String serverUrl="10.148.1.66:3306";
+    //String serverUrl="192.168.0.109:3306";
+    String serverUrl="10.148.1.66:3306";
     String database="360_logica_mobile_logger";
     String userName="";
     String logged_UserName="";
@@ -392,6 +393,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                             + "\nSERIAL : " + Build.SERIAL
                             + "\nID : " + Build.VERSION.RELEASE
                             + "\nMANUFACTURER : " + Build.MANUFACTURER);
+                    //SCREEN_SIZE, scrEENsize, resolution,udid,
+                    //+"\n D"+Build.);
 
                     build_SERIAL = Build.SERIAL;
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -402,7 +405,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     if(userName!=backupUserName)
                     {
                         sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', '" + Build.VERSION.RELEASE + "')";
+                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', 'Android " + Build.VERSION.RELEASE + "')";
                         databaseMethods.insertUpdateValue(query);
                     }
                 }
