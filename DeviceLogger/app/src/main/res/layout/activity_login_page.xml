@@ -43,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="15dp"
+                    android:textSize="10dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
@@ -61,7 +61,16 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Mobile Inventory App"
-                    android:textSize="35dp"
+                    android:textSize="30dp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="10dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
@@ -70,8 +79,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="\nProject : "
-                    android:textSize="23dp"
+                    android:text="Project : "
+                    android:textSize="20dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
@@ -79,12 +88,14 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/fullscreen_content_login_controls_horizontal"
+        <LinearLayout
+            android:id="@+id/fullscreen_content_login_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:ignore="UselessParent">
 
             <LinearLayout
@@ -156,10 +167,12 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/fullscreen_content_info_controls_horizontal"
+        <LinearLayout
+            android:id="@+id/fullscreen_content_info_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -179,172 +192,146 @@
                     android:text="Last logged in user details\n"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="30dp"
+                    android:textSize="20dp"
                     android:textStyle="bold"
-                    android:visibility="visible"
-                    tools:text="Mobile Details" />
+                    android:visibility="visible" />
 
                 <ScrollView
                     android:id="@+id/layout"
-                    android:layout_height="match_parent"
-                    android:scrollbars="horizontal"
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:layout_marginTop="5dip"
+                    android:fillViewport="true"
                     android:scrollbarStyle="outsideInset"
-                    android:fillViewport="true">
+                    android:scrollbars="horizontal">
 
                     <HorizontalScrollView
                         android:id="@+id/horizontalView"
-                        android:layout_height="wrap_content"
-                        android:scrollbars="horizontal"
                         android:layout_width="wrap_content"
-                        android:layout_marginTop="5dip">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dip"
+                        android:layout_gravity="center"
+                        android:scrollbars="horizontal">
 
-                        <TableLayout
-
-                            android:id="@+id/tableLayout_LoggedIn_Details"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:visibility="visible">
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            tools:ignore="UselessParent">
 
-                            <TableRow
+                            <TableLayout
 
+                                android:id="@+id/tableLayout_LoggedIn_Details"
                                 android:layout_width="match_parent"
-                                android:layout_height="fill_parent">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="1"
-                                    android:gravity="center"
-                                    android:text=" S. No. \t"
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="2"
-                                    android:gravity="center"
-                                    android:text=" User Name \t"
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="3"
-                                    android:gravity="center"
-                                    android:text="   | \t"
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="4"
-                                    android:gravity="center"
-                                    android:text=" Start Time "
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="5"
-                                    android:gravity="center"
-                                    android:text="   | \t"
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="6"
-                                    android:gravity="center"
-                                    android:text=" End Time "
-                                    android:textSize="18dp"
-                                    android:textStyle="bold" />
-
-                            </TableRow>
-
-                            <TableRow
-                                android:layout_width="match_parent"
-                                android:layout_height="fill_parent"
+                                android:layout_height="match_parent"
+                                android:dividerPadding="2dp"
                                 android:visibility="visible">
 
-                                <TextView
-                                    android:id="@+id/table_User_SNo"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="1"
-                                    android:gravity="center"
-                                    android:text=" 1 \n 2 \n 3 \n 4 \n 5 "
-                                    android:textSize="14dp"
-                                    android:textStyle="normal"
-                                    android:visibility="visible" />
+                                <TableRow
 
-                                <TextView
-                                    android:id="@+id/table_User_Name"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="2"
-                                    android:gravity="center"
-                                    android:text=""
-                                    android:textSize="14dp"
-                                    android:textStyle="normal"
-                                    android:visibility="visible" />
+                                    android:layout_width="match_parent"
+                                    android:layout_height="fill_parent">
 
-                                <TextView
-                                    android:id="@+id/table_Separator"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="3"
-                                    android:gravity="center"
-                                    android:text=""
-                                    android:textSize="14dp"
-                                    android:visibility="visible" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="1"
+                                        android:gravity="center"
+                                        android:text="\t\t\tS.No."
+                                        android:textSize="18dp"
+                                        android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/table_Start_Time1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="4"
-                                    android:gravity="center"
-                                    android:text=""
-                                    android:textSize="14dp"
-                                    android:textStyle="normal"
-                                    android:visibility="visible" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="2"
+                                        android:gravity="center"
+                                        android:text=" User Name "
+                                        android:textSize="18dp"
+                                        android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/table_Separator1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="5"
-                                    android:gravity="center"
-                                    android:text=""
-                                    android:textSize="14dp"
-                                    android:visibility="visible" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="3"
+                                        android:gravity="center"
+                                        android:text=" Start Time "
+                                        android:textSize="18dp"
+                                        android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/table_End_Time1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_column="6"
-                                    android:gravity="center"
-                                    android:text=""
-                                    android:textSize="14dp"
-                                    android:textStyle="normal"
-                                    android:visibility="visible" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="4"
+                                        android:gravity="center"
+                                        android:text=" End Time "
+                                        android:textSize="18dp"
+                                        android:textStyle="bold" />
 
-                            </TableRow>
+                                </TableRow>
 
-                        </TableLayout>
+                                <TableRow
+                                    android:layout_width="match_parent"
+                                    android:layout_height="fill_parent"
+                                    android:visibility="visible">
+
+                                    <TextView
+                                        android:id="@+id/table_User_SNo"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="1"
+                                        android:gravity="center"
+                                        android:text=" 1 \n 2 \n 3 \n 4 \n 5 "
+                                        android:textSize="14dp"
+                                        android:textStyle="normal"
+                                        android:visibility="visible" />
+
+                                    <TextView
+                                        android:id="@+id/table_User_Name"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="2"
+                                        android:gravity="center"
+                                        android:text=""
+                                        android:textSize="14dp"
+                                        android:textStyle="normal"
+                                        android:visibility="visible" />
+
+                                    <TextView
+                                        android:id="@+id/table_Start_Time1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="3"
+                                        android:gravity="center"
+                                        android:text=""
+                                        android:textSize="14dp"
+                                        android:textStyle="normal"
+                                        android:visibility="visible" />
+
+                                    <TextView
+                                        android:id="@+id/table_End_Time1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_column="4"
+                                        android:gravity="center"
+                                        android:text=""
+                                        android:textSize="14dp"
+                                        android:textStyle="normal"
+                                        android:visibility="visible" />
+
+                                </TableRow>
+
+                            </TableLayout>
+
+                        </LinearLayout>
 
                     </HorizontalScrollView>
 
                 </ScrollView>
+
 
                 <Button
                     android:id="@+id/buttonProceed"
@@ -359,10 +346,12 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/fullscreen_content_logout_controls_horizontal"
+        <LinearLayout
+            android:id="@+id/fullscreen_content_logout_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -428,6 +417,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
