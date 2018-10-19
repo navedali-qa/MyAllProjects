@@ -7,4 +7,14 @@
     <string name="dummy_password_text">Enter Password</string>
 
     <string name="title_activity_fullscreen">FullscreenActivity</string>
+
+    <string name="title_activity_login">Login</string>
+
+    <string name="title_activity_device_info">DeviceInfo</string>
+
+    <string name="title_activity_log_out">LogOut</string>
+
+    <string name="title_activity_admin_control">AdminControl</string>
+
+    <string name="title_activity_test">TestActivity</string>
 </resources>

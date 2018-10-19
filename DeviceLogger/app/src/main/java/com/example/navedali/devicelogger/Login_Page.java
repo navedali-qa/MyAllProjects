@@ -3,7 +3,6 @@ package com.example.navedali.devicelogger;
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
-import android.app.admin.DeviceAdminInfo;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +12,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.xml.datatype.Duration;
 
 public class Login_Page extends AppCompatActivity implements View.OnClickListener
 {
@@ -39,8 +40,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     DatabaseMethods databaseMethods;
     ResultSet resultSet;
     //String serverUrl="192.168.0.103:3306";
-    //String serverUrl="192.168.0.109:3306";
-    String serverUrl="10.148.1.66:3306";
+    String serverUrl="192.168.0.101:3306";
+    String apiUrl = "http://192.168.0.101:8081";
+    //String serverUrl="10.148.1.66:3306";
     String database="360_logica_mobile_logger";
     String userName="";
     String logged_UserName="";
@@ -48,6 +50,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     String build_SERIAL="";
     String backupAdminName="aa";
     String backupUserName="bb";
+    String apiResponse="{\"error\":true}";
 
     //Custom Variable
     private Timer timer;
@@ -60,6 +63,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public EditText editText_confirm_password;
 
     public TextView textView_Logged_User;
+    public TextView textView_Logged_User1;
     public  TextView textView_Logged_User_UpdatePassword;
 
     //Frame
@@ -132,6 +136,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         tableLayout_LoggedIn_Details = (TableLayout) findViewById(R.id.tableLayout_LoggedIn_Details);
 
         textView_Logged_User = (TextView) findViewById(R.id.textView_Logged_User);
+        textView_Logged_User1 = (TextView) findViewById(R.id.textView_Logged_User1);
 
         //Logout process
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
@@ -154,34 +159,24 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                try {
-
-                    resultSet = databaseMethods.executeQuery("SELECT * FROM login_info WHERE End_Time='LOCKED' AND Mobile_Serial_Number='" + Build.SERIAL + "'");
-                    while (resultSet.next()) {
-                        userName = resultSet.getString(2);
-                        found = true;
-                        break;
-                    }
-                    if (found) {
-                        resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + userName + "'");
-                        while (resultSet.next()) {
-                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                            userPassword = resultSet.getString(5);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (found) {
+                apiResponse = DatabaseMethods.getMethod(apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
+                if (!apiResponse.contains("User not logged in"))
+                {
+                    logged_UserName = DatabaseMethods.parseJSON(apiResponse,"FirstName")+" "+DatabaseMethods.parseJSON(apiResponse,"LastName");
+                    userPassword = DatabaseMethods.parseJSON(apiResponse,"Password");
+                    userName = DatabaseMethods.parseJSON(apiResponse,"Username");
                     textView_Logged_User.setText("Logged in User : " + logged_UserName + "\n\n");
+                    textView_Logged_User1.setText("Logged in User : " + logged_UserName + "\n");
                     fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
-                    if (fullscreen_content_logout_controls_horizontal.getVisibility() == View.VISIBLE) {
+                    if (fullscreen_content_logout_controls_horizontal.getVisibility() == View.VISIBLE)
+                    {
                         Timer timer = new Timer();
                         timer.cancel();
                         timer = null;
                     }
-                } else {
+                }
+                else
+                    {
                     fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
                 }
             }});
@@ -241,6 +236,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
         switch (v.getId())
         {
+            case R.id.add_device_Info:
+                    addDeviceInfo();
+                break;
             case R.id.activate_admin:
                 if (!policyManager.isAdminActive())
                 {
@@ -341,29 +339,28 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 }
                 else
                 {
+                    logged_UserName="";
                     runOnUiThread(new Runnable()
                     {
                         @Override
                         public void run() {
                             try
                             {
-                                resultSet = databaseMethods.executeQuery("SELECT * FROM Admin WHERE Admin_UserName='" + editText_username.getText().toString().trim() + "' AND Admin_Password='" + editText_password.getText().toString() + "'");
-                                while (resultSet.next()) {
-                                    if (editText_password.getText().toString().equals(resultSet.getString(3))) {
+                                apiResponse = DatabaseMethods.getMethod(apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
+                                if (!apiResponse.contains("Login credentials are wrong. Please try again!"))
+                                {
                                         loginAdmin[0] = true;
-                                    }
-                                    break;
                                 }
-                                if (!loginAdmin[0]) {
-                                    resultSet = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + editText_username.getText().toString() + "' AND Password='" + editText_password.getText().toString() + "'");
-                                    while (resultSet.next()) {
-                                        if (editText_password.getText().toString().equals(resultSet.getString(5))) {
-                                            logged_UserName = resultSet.getString(2) + " " + resultSet.getString(3);
-                                            userName = resultSet.getString(4);
-                                            userPassword = resultSet.getString(5);
-                                            loginUser[0] = true;
-                                        }
-                                        break;
+                                if (!loginAdmin[0])
+                                {
+                                    apiResponse = DatabaseMethods.getMethod(apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
+
+                                    if (!apiResponse.contains("Login credentials are wrong. Please try again!"))
+                                    {
+                                        logged_UserName = DatabaseMethods.parseJSON(apiResponse,"FirstName")+" "+DatabaseMethods.parseJSON(apiResponse,"LastName");
+                                        userName = DatabaseMethods.parseJSON(apiResponse,"Username");
+                                        userPassword = DatabaseMethods.parseJSON(apiResponse,"Password");
+                                        loginUser[0] = true;
                                     }
                                 }
                             }
@@ -385,6 +382,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 if (loginUser[0])
                 {
                     updateRecentlyUserTable();
+
                     System.out.println("DEVICE DETAILS :\n"
                             + "\nBRAND : " + Build.BRAND
                             + "\nMODEL : " + Build.MODEL
@@ -392,21 +390,21 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                             + "\nVERIONS PRODUCT : " + Build.PRODUCT
                             + "\nSERIAL : " + Build.SERIAL
                             + "\nID : " + Build.VERSION.RELEASE
-                            + "\nMANUFACTURER : " + Build.MANUFACTURER);
-                    //SCREEN_SIZE, scrEENsize, resolution,udid,
-                    //+"\n D"+Build.);
+                            + "\nMANUFACTURER : " + Build.MANUFACTURER
+                            + "\n Screen size in inches : "+getScreenSize());
 
                     build_SERIAL = Build.SERIAL;
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     build_SERIAL=Build.SERIAL;
+                    textView_Logged_User1.setText("Logged in User : " + logged_UserName+"\n");
                     fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
                     fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
 
                     if(userName!=backupUserName)
                     {
                         sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        String query = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version) VALUES ('" + userName + "', '" + Build.SERIAL + "', '" + sdf.format(new Date()) + "', 'LOCKED', '" + Build.BRAND + "', '" + Build.MODEL + "', 'Android " + Build.VERSION.RELEASE + "')";
-                        databaseMethods.insertUpdateValue(query);
+                        String query = "UserName=" + userName + "&Mobile_Serial_Number="+ Build.SERIAL +"&Start_Time=" + sdf.format(new Date()).replaceAll(" ","%20")+ "&End_Time=LOCKED&Brand="+Build.BRAND+"&Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") + "&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
+                        apiResponse = DatabaseMethods.getMethod(apiUrl + "/DeviceLoggerAPI/Api/insertLoginInfo.php?" + query);
                     }
                 }
                 else
@@ -429,6 +427,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
+                textView_Logged_User1.setText("Logged in User : " + logged_UserName+"\n");
                 fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
                 fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                 resetFields();
@@ -480,6 +479,18 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         });
     }
 
+    public void addDeviceInfo()
+    {
+        String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
+        apiResponse = DatabaseMethods.getMethod(apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+        editText_username.setText("");
+        editText_password.setText("");
+        fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
+        timerStart();
+        Toast.makeText(Login_Page.this, "Device Info Added", Toast.LENGTH_SHORT).show();
+    }
+
     //DISABLE ANDROID BUTTONS
     @Override
     protected void onResume()
@@ -512,18 +523,13 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                String lastUser = "";
+                String lastUser = " ";
                 TextView table_User_Name = (TextView) findViewById(R.id.table_User_Name);
-                TextView table_Separator = (TextView) findViewById(R.id.table_Separator);
                 TextView table_Start_Time1 = (TextView) findViewById(R.id.table_Start_Time1);
-                TextView table_Separator1 = (TextView) findViewById(R.id.table_Separator1);
                 TextView table_End_Time1 = (TextView) findViewById(R.id.table_End_Time1);
-
-                table_User_Name.setText("");
-                table_Separator.setText("");
-                table_Start_Time1.setText("");
-                table_Separator1.setText("");
-                table_End_Time1.setText("");
+                table_User_Name.setText(" ");
+                table_Start_Time1.setText(" ");
+                table_End_Time1.setText(" ");
                 try
                 {
                     System.out.println("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
@@ -535,11 +541,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                         {
                             System.out.println(lastUser+"\t"+resultSet.getString(2)+"\t"+resultSet.getString(3));
                             lastUser = resultSet1.getString(2) + " " + resultSet1.getString(3);
-                            table_User_Name.setText(table_User_Name.getText() + lastUser + " \t\n ");
-                            table_Separator.setText(table_Separator.getText() + " |\t\n ");
-                            table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "\t\n ");
-                            table_Separator1.setText(table_Separator1.getText() + " |\t\n ");
-                            table_End_Time1.setText(table_End_Time1.getText() + resultSet.getString(3) + "\t\n ");
+                            table_User_Name.setText(table_User_Name.getText() + lastUser + "  \n");
+                            table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "  \n");
+                            table_End_Time1.setText(table_End_Time1.getText() + resultSet.getString(3) + "  \n");
                         }
                     }
                     resultSet.close();
@@ -548,7 +552,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     e.printStackTrace();
                 }
             }
-            });
+        });
     }
 
     public void hideKeypad()
@@ -558,6 +562,18 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public String getScreenSize()
+    {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        double x = Math.pow(dm.widthPixels/dm.xdpi,2);
+        double y = Math.pow(dm.heightPixels/dm.ydpi,2);
+        double screenInches = Math.sqrt(x+y);
+
+        screenInches=  (double)Math.round(screenInches * 10) / 10;
+        return String.valueOf(screenInches);
     }
 
     @Override
