@@ -1,10 +1,13 @@
 package com.example.navedali.devicelogger;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -21,89 +24,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-public class DatabaseMethods
+public class DatabaseMethods extends AsyncTask<String, Void, String>
 {
     static
     {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
-    }
-
-    Connection connection;
-    PreparedStatement preparedStatement;
-    Statement statement;
-    Context context;
-    String serverUrl;
-    String database;
-
-    public DatabaseMethods(Context context, String serverUrl, String database)
-    {
-        this.context=context;
-        this.serverUrl=serverUrl;
-        this.database = database;
-}
-
-    public Connection getConnection()
-    {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        try
-        {
-            this.context = context;
-            if(connection==null)
-            {
-                System.out.println("START TIME : "+sdf.format(new Date()));
-
-                Class.forName("com.mysql.jdbc.Driver");
-                Properties prop = new Properties();
-                prop.put("connectTimeout","10000");
-                String connectionString = "jdbc:mysql://"+serverUrl+"/"+database+"?user=root&password=";
-                connection = (Connection) DriverManager.getConnection(connectionString,prop);
-                //connection = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverUrl + "/" + database, "root", "",prop);
-            }
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(context, "Database/Intranet is not connected...", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            System.out.println("END TIME : "+sdf.format(new Date()));
-        }
-        return connection;
-    }
-
-    public ResultSet executeQuery(String query)
-    {
-        ResultSet resultSet=null;
-        try
-        {
-            connection = getConnection();
-            statement = connection.createStatement();
-            resultSet = (ResultSet) statement.executeQuery(query);
-           // statement.close();
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(context, "Database/Intranet is not connected...", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        return resultSet;
-    }
-
-    public void insertUpdateValue(String query)
-    {
-        try
-        {
-            connection = getConnection();
-            preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.execute();
-            preparedStatement.close();
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(context, "Database/Intranet is not connected...", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
     }
 
     public static String getMethod(String url)
@@ -126,12 +53,12 @@ public class DatabaseMethods
         catch (Exception e)
         {
             e.printStackTrace();
-            response.append("{\"error\":true, User not logged in, Login credentials are wrong. Please try again!}");
+            response.append("Something wrong!!!");
         }
         return response.toString();
     }
 
-    public static String parseJSON(String response, String key)
+    public String parseJSON(String response, String key)
     {
         try
         {
@@ -142,5 +69,61 @@ public class DatabaseMethods
         {
             return "";
         }
+    }
+
+    public String parseJSONArray(String response, String key)
+    {
+        String value = "";
+        try
+        {
+            JSONArray myArray = new JSONArray(response);
+            for (int i=0;i<5;i++)
+            {
+                JSONObject myResponse = new JSONObject(myArray.get(i).toString());
+                if(key=="UserName")
+                {
+                    String test = getMethod(Login_Page.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsersName.php?Username="+myResponse.getString(key));
+                    test = parseJSON(test,"FirstName")+" "+parseJSON(test,"LastName");
+                    value = value+test+" \n";
+                }
+                else
+                {
+                    value = value + myResponse.getString(key) + " \n";
+                }
+            }
+        }
+        catch(Exception e)
+        {
+e.printStackTrace();
+        }
+        return value;
+    }
+
+    @Override
+    protected String doInBackground(String... voids)
+    {
+
+        String url = voids[0];
+        StringBuffer response = new StringBuffer();
+        try {
+            URL obj = new URL(url);
+
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            con.setConnectTimeout(5000);
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            response.append("Something wrong!!!");
+        }
+        return response.toString();
     }
 }

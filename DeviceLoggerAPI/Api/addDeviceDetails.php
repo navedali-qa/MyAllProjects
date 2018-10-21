@@ -4,18 +4,17 @@
 	
 	$response = array();
 
-	if (isset($_GET['Mobile_Name']) && isset($_GET['Brand']) && isset($_GET['Mobile_Serial_Number']) && isset($_GET['Version']) && isset($_GET['Screen_Size'])) 
+	if (isset($_GET['Mobile_Name']) && isset($_GET['Brand']) && isset($_GET['Mobile_Serial_Number']) && isset($_GET['Version']) && isset($_GET['Screen_Size']) && isset($_GET['Project'])) 
 	{
-		//Mobile_Name	Brand	Mobile_Serial_Number			Mobile_count
-
 		$Mobile_Name = $_GET['Mobile_Name'];
 		$Brand = $_GET['Brand'];
 		$Mobile_Serial_Number = $_GET['Mobile_Serial_Number'];
 		$Version = $_GET['Version'];		
 		$Screen_Size = $_GET['Screen_Size'];
+		$Project = $_GET['Project'];
 	 
 		// get the user by username and password
-		$user = $db->insertDeviceInfo($Mobile_Name, $Brand, $Mobile_Serial_Number, $Version, $Screen_Size);
+		$user = $db->insertDeviceInfo($Mobile_Name, $Brand, $Mobile_Serial_Number, $Version, $Screen_Size, $Project);
 	 
 		if ($user != false) 
 		{
