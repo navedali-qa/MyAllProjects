@@ -1,7 +1,8 @@
 package com.example.navedali.devicelogger;
 
-import android.annotation.SuppressLint;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -9,14 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
-import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
 
 public class AdminPageActivity extends AppCompatActivity   implements View.OnClickListener
@@ -58,21 +56,21 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
 
         setContentView(R.layout.activity_admin_page);
 
-        updateProject();
+        textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
+        textView_ProjectInfo.setText(Variables.projectName);
+
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        updateProject();
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        updateProject();
     }
 
     @Override
@@ -80,10 +78,66 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
     {
         super.onPause();
     }
+
     @Override
     public void onClick(View v)
     {
+        switch (v.getId()) {
+            case R.id.add_device_Info:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        addDeviceInfo();
+                        startLoginPage();
+                    }});
+                break;
+            case R.id.activate_admin:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        if (!policyManager.isAdminActive()) {
+                            Intent activateDeviceAdmin = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, policyManager.getAdminComponent());
+                            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "After activating admin, you will be able to block application uninstallation.");
+                            startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(), "Admin already activated", Toast.LENGTH_SHORT).show();
+                            startLoginPage();
+                        }
+                    }});
+                break;
+            case R.id.deactivate_admin:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        if (policyManager.isAdminActive()) {
+                            policyManager.disableAdmin();
+                        }
+                        startLoginPage();
+                    }});
+                break;
+            case R.id.backButton:
+                startLoginPage();
+                break;
+        }
+    }
 
+    public void startLoginPage()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                finish();
+                Intent intent = new Intent(getApplicationContext(), LoginPageActivity.class);
+                startActivity(intent);
+            }});
     }
 
     //HELPER METHODS
@@ -99,33 +153,15 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
         return String.valueOf(screenInches);
     }
 
+    public void addDeviceInfo()
+    {
+        String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
+        variables.addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        Toast.makeText(AdminPageActivity.this, "Device Info Added", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onBackPressed(){}
-
-    public void updateProject()
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20")+"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
-                variables.getProjectNameResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
-                String project_Name = getDatabaseMethods().parseJSON(variables.getProjectNameResponse,"Project");
-                if(project_Name=="" || project_Name.contains("Something wrong!!!"))
-                {
-                    variables.projectName="Project : Other_";
-                }
-                else
-                {
-                    variables.projectName = "Project : " + project_Name;
-                }
-
-                textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
-                textView_ProjectInfo.setText(variables.projectName);
-                variables.getProjectNameResponse = "";
-            }});
-    }
 
     public DatabaseMethods getDatabaseMethods()
     {

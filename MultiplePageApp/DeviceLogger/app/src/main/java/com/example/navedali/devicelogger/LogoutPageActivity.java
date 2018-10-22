@@ -1,6 +1,7 @@
 package com.example.navedali.devicelogger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
-import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
+
+import java.util.Timer;
 
 public class LogoutPageActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -32,6 +34,12 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
     {
         super.onCreate(savedInstanceState);
 
+        if(Variables.back)
+        {
+            //moveTaskToBack(true);
+        }
+        Variables.back=false;
+
         policyManager = new PolicyManager(this);
 
         variables = new Variables();
@@ -43,13 +51,14 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
 
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
 
+        editText_confirm_password.setText("");
         updateProject();
     }
 
     @Override
     protected void onResume()
     {
-//        editText_confirm_password.setText("");
+        editText_confirm_password.setText("");
         super.onResume();
     }
 
@@ -67,10 +76,37 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
+
+        switch (v.getId())
+        {
+            case R.id.buttonLogout:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        hideKeypad();
+                        startLoginPage();
+                    }});
+                break;
+        }
 
     }
 
+    public void startLoginPage()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                finish();
+                Intent intent = new Intent(getApplicationContext(), LoginPageActivity.class);
+                startActivity(intent);
+            }});
+    }
     //HELPER METHODS
 
     public void hideKeypad()

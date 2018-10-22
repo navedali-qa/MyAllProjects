@@ -5,7 +5,6 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -19,7 +18,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
-import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
 
 import java.util.Timer;
@@ -110,14 +108,13 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume()
     {
+        super.onResume();
         mContentView.setVisibility(View.GONE);
 
         delayedHide(5);
 
         editText_username.setText("");
         editText_password.setText("");
-
-        super.onResume();
     }
 
     private void delayedHide(int delayMillis)
@@ -147,12 +144,18 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId())
         {
             case R.id.buttonLogin:
-                        myTimerTask = new LoginPageActivity.MyTimerTask();
-                        timer = new Timer();
-                        timer.cancel();
-                        finish();
-                        Intent intent = new Intent(getApplicationContext(), AdminPageActivity.class);
-                        startActivity(intent);
+                runOnUiThread(new Runnable()
+                {
+                      @Override
+                        public void run()
+                      {
+                            hideKeypad();
+                            timer = new Timer();
+                            timer.cancel();
+                            finish();
+                            Intent intent = new Intent(getApplicationContext(), UserDetailsInfoActivity.class);
+                            startActivity(intent);
+                      }});
                 break;
         }
     }
@@ -195,11 +198,11 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                 String project_Name = getDatabaseMethods().parseJSON(variables.getProjectNameResponse,"Project");
                 if(project_Name=="" || project_Name.contains("Something wrong!!!"))
                 {
-                    variables.projectName="Project : Other_";
+                    Variables.projectName="Project : Other_";
                 }
                 else
                 {
-                    variables.projectName = "Project : " + project_Name;
+                    Variables.projectName = "Project : " + project_Name;
                 }
 
                 textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
@@ -224,21 +227,6 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                 else
                 {
                     finish();
-                }
-            }});
-    }
-
-    public void timerStart()
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run() {
-                if (timer == null)
-                {
-                    myTimerTask = new MyTimerTask();
-                    timer = new Timer();
-                    timer.schedule(myTimerTask, 5, 5);
                 }
             }});
     }
@@ -268,6 +256,21 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                 db[0] = new DatabaseMethods();
             }});
         return db[0];
+    }
+
+    public void timerStart()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() {
+                if (timer == null)
+                {
+                    myTimerTask = new MyTimerTask();
+                    timer = new Timer();
+                    timer.schedule(myTimerTask, 5, 5);
+                }
+            }});
     }
 
     private void bringApplicationToFront()

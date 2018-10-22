@@ -39,8 +39,7 @@
             android:theme="@style/FullscreenTheme"
             android:visibleToInstantApps="false" />
 
-        <receiver
-            android:name=".OtherPages.StartActivityOnBootReceiver"
+        <receiver android:name=".StartActivityOnBootReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
@@ -52,8 +51,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".OtherPages.SampleDeviceAdminReceiver"
+        <receiver android:name=".SampleDeviceAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
@@ -66,7 +64,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".OtherPages.ShutdownReceiver">
+        <receiver android:name=".ShutdownReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
                 <action android:name="android.intent.action.REBOOT" />
@@ -87,7 +85,6 @@
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

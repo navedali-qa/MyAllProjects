@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
-import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

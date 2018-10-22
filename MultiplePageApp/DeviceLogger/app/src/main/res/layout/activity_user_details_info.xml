@@ -106,7 +106,7 @@
                 tools:ignore="UselessParent">
 
                 <TextView
-                    android:id="@+id/textView_Logged_User1"
+                    android:id="@+id/textView_Logged_User"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

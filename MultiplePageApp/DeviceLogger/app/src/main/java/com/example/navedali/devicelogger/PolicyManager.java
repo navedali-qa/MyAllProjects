@@ -1,4 +1,4 @@
-package com.example.navedali.devicelogger.OtherPages;
+package com.example.navedali.devicelogger;
 
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;

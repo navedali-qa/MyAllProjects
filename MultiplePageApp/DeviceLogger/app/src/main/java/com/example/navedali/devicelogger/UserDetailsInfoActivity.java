@@ -1,45 +1,46 @@
 package com.example.navedali.devicelogger;
 
-import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
-import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class UserDetailsInfoActivity extends AppCompatActivity  implements View.OnClickListener
 {
-    private View mContentView;
-    PolicyManager policyManager;
-    private static final int UI_ANIMATION_DELAY = 5;
-    private final Handler mHideHandler = new Handler();
     Variables variables;
 
     public TextView textView_ProjectInfo;
+    public TextView textView_Logged_User;
+
+    private Timer timer;
+    private UserDetailsInfoActivity.MyTimerTask myTimerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        policyManager = new PolicyManager(this);
         variables = new Variables();
 
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
         setContentView(R.layout.activity_user_details_info);
-
+        textView_Logged_User = findViewById(R.id.textView_Logged_User);
+        textView_Logged_User.setText(Variables.loggedUserName+"\n\n");
         updateProject();
     }
 
@@ -47,26 +48,36 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
     protected void onResume()
     {
         super.onResume();
-        updateProject();
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        updateProject();
     }
 
     @Override
     protected void onPause()
     {
+        timerStart();
         super.onPause();
     }
 
     @Override
     public void onClick(View v)
     {
-
+        switch (v.getId())
+        {
+            case R.id.buttonProceed:
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                        public void run()
+                        {
+                            proceedButtonFunctionality();
+                        }});
+                break;
+        }
     }
 
     //HELPER METHODS
@@ -80,6 +91,24 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
 
         screenInches=  (double)Math.round(screenInches * 10) / 10;
         return String.valueOf(screenInches);
+    }
+
+    public void proceedButtonFunctionality()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                myTimerTask = new UserDetailsInfoActivity.MyTimerTask();
+                timer = new Timer();
+                timer.cancel();
+                finish();
+                Intent intent = new Intent(getApplicationContext(), LogoutPageActivity.class);
+                startActivity(intent);
+                Variables.back=true;
+            }
+        });
     }
 
     @Override
@@ -121,5 +150,44 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
                 db[0] = new DatabaseMethods();
             }});
         return db[0];
+    }
+
+    public void timerStart()
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run() {
+                if (timer == null)
+                {
+                    myTimerTask = new UserDetailsInfoActivity.MyTimerTask();
+                    timer = new Timer();
+                    timer.schedule(myTimerTask, 5, 5);
+                }
+            }});
+    }
+    private void bringApplicationToFront()
+    {
+        KeyguardManager myKeyManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        if (myKeyManager.inKeyguardRestrictedInputMode())
+            return;
+
+        Intent notificationIntent = new Intent(this, UserDetailsInfoActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    class MyTimerTask extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            bringApplicationToFront();
+        }
     }
 }

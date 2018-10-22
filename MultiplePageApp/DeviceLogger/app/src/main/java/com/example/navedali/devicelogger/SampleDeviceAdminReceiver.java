@@ -1,4 +1,4 @@
-package com.example.navedali.devicelogger.OtherPages;
+package com.example.navedali.devicelogger;
 
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
@@ -10,14 +10,14 @@ public class SampleDeviceAdminReceiver extends DeviceAdminReceiver
 	@Override
 	public void onDisabled(Context context, Intent intent)
 	{
-		Toast.makeText(context, "disabled dpm", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, "Admin disabled", Toast.LENGTH_SHORT).show();
 		super.onDisabled(context, intent);
 	}
 
 	@Override
 	public void onEnabled(Context context, Intent intent)
 	{
-		Toast.makeText(context, "enabled dpm", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, "Admin activated", Toast.LENGTH_SHORT).show();
 		super.onEnabled(context, intent);
 	}
 
