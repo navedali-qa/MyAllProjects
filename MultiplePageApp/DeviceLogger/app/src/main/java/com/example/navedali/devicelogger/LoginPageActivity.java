@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -91,7 +92,7 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
-        setContentView(R.layout.activity_login_page1);
+        setContentView(R.layout.activity_login_page);
 
         mVisible = true;
         mContentView = findViewById(R.id.fullscreen_content);
@@ -141,8 +142,19 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void onClick(View v) {
-
+    public void onClick(View v)
+    {
+        switch (v.getId())
+        {
+            case R.id.buttonLogin:
+                        myTimerTask = new LoginPageActivity.MyTimerTask();
+                        timer = new Timer();
+                        timer.cancel();
+                        finish();
+                        Intent intent = new Intent(getApplicationContext(), AdminPageActivity.class);
+                        startActivity(intent);
+                break;
+        }
     }
 
     //HELPER METHODS
@@ -208,12 +220,6 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                 if (variables.updateUIFirstTimeResponse.contains("User not logged in") || variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
                 {
                     //DO NOTHING...
-                    Intent intent = new Intent(getApplicationContext(), LogoutPageActivity.class);
-                    startActivity(intent);
-                    finish();
-                    if(timer!=null) {
-                        timer.cancel();
-                    }
                 }
                 else
                 {

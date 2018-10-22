@@ -131,7 +131,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
-        setContentView(R.layout.activity_login_page);
+        setContentView(R.layout.full_app_activity_login_page);
 
         mVisible = true;
         mContentView = findViewById(R.id.fullscreen_content);

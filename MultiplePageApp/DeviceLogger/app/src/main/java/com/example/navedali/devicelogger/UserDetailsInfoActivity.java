@@ -11,16 +11,15 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
 import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
 
-public class AdminPageActivity extends AppCompatActivity   implements View.OnClickListener
+public class UserDetailsInfoActivity extends AppCompatActivity  implements View.OnClickListener
 {
+    private View mContentView;
     PolicyManager policyManager;
     private static final int UI_ANIMATION_DELAY = 5;
     private final Handler mHideHandler = new Handler();
@@ -28,27 +27,10 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
 
     public TextView textView_ProjectInfo;
 
-    private View mControlsView;
-
-    private final Runnable mShowPart2Runnable = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-            mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        mControlsView = findViewById(R.id.admin_Control);
 
         policyManager = new PolicyManager(this);
         variables = new Variables();
@@ -56,7 +38,7 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
-        setContentView(R.layout.activity_admin_page);
+        setContentView(R.layout.activity_user_details_info);
 
         updateProject();
     }
@@ -80,6 +62,7 @@ public class AdminPageActivity extends AppCompatActivity   implements View.OnCli
     {
         super.onPause();
     }
+
     @Override
     public void onClick(View v)
     {

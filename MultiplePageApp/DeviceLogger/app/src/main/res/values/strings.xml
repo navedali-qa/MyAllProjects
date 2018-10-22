@@ -23,4 +23,6 @@
     <string name="title_activity_logout_page">LogoutPageActivity</string>
 
     <string name="title_activity_admin_page">AdminPageActivity</string>
+
+    <string name="title_activity_user_details_info">UserDetailsInfoActivity</string>
 </resources>

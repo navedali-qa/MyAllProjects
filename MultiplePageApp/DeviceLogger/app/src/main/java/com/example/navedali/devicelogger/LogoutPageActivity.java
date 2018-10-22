@@ -16,7 +16,7 @@ import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
 import com.example.navedali.devicelogger.OtherPages.PolicyManager;
 import com.example.navedali.devicelogger.OtherPages.Variables;
 
-public class LogoutPageActivity extends AppCompatActivity  implements View.OnClickListener
+public class LogoutPageActivity extends AppCompatActivity implements View.OnClickListener
 {
     private View mContentView;
     PolicyManager policyManager;
@@ -39,7 +39,7 @@ public class LogoutPageActivity extends AppCompatActivity  implements View.OnCli
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
-        setContentView(R.layout.activity_login_page1);
+        setContentView(R.layout.activity_logout_page);
 
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
 
@@ -54,11 +54,10 @@ public class LogoutPageActivity extends AppCompatActivity  implements View.OnCli
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
-        //editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
-       // editText_confirm_password.setText("");
+        editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
+        editText_confirm_password.setText("");
     }
 
     @Override
