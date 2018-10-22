@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">DeviceLogger</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">Demo\nApplication</string>
+    <string name="dummy_username_text">Enter Username</string>
+    <string name="dummy_password_text">Enter Password</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+
+    <string name="title_activity_login">Login</string>
+
+    <string name="title_activity_device_info">DeviceInfo</string>
+
+    <string name="title_activity_log_out">LogOut</string>
+
+    <string name="title_activity_admin_control">AdminControl</string>
+
+    <string name="title_activity_test">TestActivity</string>
+
+    <string name="title_activity_login_page">LoginPageActivity</string>
+
+    <string name="title_activity_logout_page">LogoutPageActivity</string>
+
+    <string name="title_activity_admin_page">AdminPageActivity</string>
+</resources>
