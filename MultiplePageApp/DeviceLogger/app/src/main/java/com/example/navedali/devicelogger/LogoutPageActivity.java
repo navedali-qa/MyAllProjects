@@ -25,6 +25,7 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
     private static final int UI_ANIMATION_DELAY = 5;
     private final Handler mHideHandler = new Handler();
     Variables variables;
+    TextView textView_Logged_User;
 
     public EditText editText_confirm_password;
     public TextView textView_ProjectInfo;
@@ -33,12 +34,6 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        if(Variables.back)
-        {
-            //moveTaskToBack(true);
-        }
-        Variables.back=false;
 
         policyManager = new PolicyManager(this);
 
@@ -50,7 +45,8 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_logout_page);
 
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
-
+        textView_Logged_User = (TextView) findViewById(R.id.textView_Logged_User);
+        textView_Logged_User.setText(Variables.loggedUserName+"\n\n");
         editText_confirm_password.setText("");
         updateProject();
     }
@@ -65,6 +61,7 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onStart() {
         super.onStart();
+        setContentView(R.layout.activity_logout_page);
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
         editText_confirm_password.setText("");
     }
@@ -82,14 +79,14 @@ public class LogoutPageActivity extends AppCompatActivity implements View.OnClic
         switch (v.getId())
         {
             case R.id.buttonLogout:
-                runOnUiThread(new Runnable()
+                new Thread()
                 {
                     @Override
                     public void run()
                     {
                         hideKeypad();
                         startLoginPage();
-                    }});
+                    }}.start();
                 break;
         }
 

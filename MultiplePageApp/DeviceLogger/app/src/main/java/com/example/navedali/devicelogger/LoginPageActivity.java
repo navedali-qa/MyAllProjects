@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -78,7 +79,7 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
         }
     };
 
-    @Override
+   @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -99,10 +100,11 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
         editText_username = (EditText) findViewById(R.id.editText_username);
         editText_password = (EditText) findViewById(R.id.editText_password);
 
-        editText_username.setText("");
-        editText_password.setText("");
+        editText_username.setText(null);
+        editText_password.setText(null);
         updateUIFirstTime();
         updateProject();
+        timerStart();
     }
 
     @Override
@@ -134,7 +136,6 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onPause()
     {
-        timerStart();
         super.onPause();
     }
 
@@ -150,10 +151,9 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                         public void run()
                       {
                             hideKeypad();
-                            timer = new Timer();
                             timer.cancel();
                             finish();
-                            Intent intent = new Intent(getApplicationContext(), UserDetailsInfoActivity.class);
+                            Intent intent = new Intent(LoginPageActivity.this, UserDetailsInfoActivity.class);
                             startActivity(intent);
                       }});
                 break;
@@ -193,9 +193,12 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void run()
             {
+                textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
+
                 String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20")+"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
                 variables.getProjectNameResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
                 String project_Name = getDatabaseMethods().parseJSON(variables.getProjectNameResponse,"Project");
+
                 if(project_Name=="" || project_Name.contains("Something wrong!!!"))
                 {
                     Variables.projectName="Project : Other_";
@@ -205,7 +208,6 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                     Variables.projectName = "Project : " + project_Name;
                 }
 
-                textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
                 textView_ProjectInfo.setText(variables.projectName);
                 variables.getProjectNameResponse = "";
             }});
@@ -213,22 +215,30 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
 
     public void updateUIFirstTime()
     {
-        runOnUiThread(new Runnable()
+        if(Variables.updateUIFirstTimeResponse=="")
         {
-            boolean found=false;
-            @Override
-            public void run()
-            {
-                variables.updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
-                if (variables.updateUIFirstTimeResponse.contains("User not logged in") || variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
-                {
-                    //DO NOTHING...
+            runOnUiThread(new Runnable() {
+                boolean found = false;
+
+                @Override
+                public void run() {
+                    Variables.updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/" + Build.SERIAL);
+                    if (variables.updateUIFirstTimeResponse.contains("User not logged in") || variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
+                    {
+
+                    }
+                    else
+                        {
+                            Variables.loggedUserName =Variables.loggedUserName+getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"LastName");
+                            Variables.loggedUserPassword = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"Passoword");
+                            System.out.println("RESULT : "+Variables.loggedUserPassword+"\t"+Variables.loggedUserName);
+                            finish();
+                            Intent intent = new Intent(LoginPageActivity.this, LogoutPageActivity.class);
+                            startActivity(intent);
+                    }
                 }
-                else
-                {
-                    finish();
-                }
-            }});
+            });
+        }
     }
 
     private void hide()
@@ -268,7 +278,7 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
                 {
                     myTimerTask = new MyTimerTask();
                     timer = new Timer();
-                    timer.schedule(myTimerTask, 5, 5);
+                    timer.schedule(myTimerTask, 10, 10);
                 }
             }});
     }
@@ -298,3 +308,5 @@ public class LoginPageActivity extends AppCompatActivity implements View.OnClick
         }
     }
 }
+
+

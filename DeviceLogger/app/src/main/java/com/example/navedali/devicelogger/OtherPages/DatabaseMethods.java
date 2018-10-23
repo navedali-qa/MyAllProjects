@@ -1,10 +1,12 @@
-package com.example.navedali.devicelogger;
+package com.example.navedali.devicelogger.OtherPages;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.widget.Toast;
+
+import com.example.navedali.devicelogger.Login_Page;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,7 +84,7 @@ public class DatabaseMethods extends AsyncTask<String, Void, String>
                 JSONObject myResponse = new JSONObject(myArray.get(i).toString());
                 if(key=="UserName")
                 {
-                    String test = getMethod(Login_Page.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsersName.php?Username="+myResponse.getString(key));
+                    String test = getMethod(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsersName.php?Username="+myResponse.getString(key));
                     test = parseJSON(test,"FirstName")+" "+parseJSON(test,"LastName");
                     value = value+test+" \n";
                 }
@@ -100,7 +102,7 @@ e.printStackTrace();
     }
 
     @Override
-    protected String doInBackground(String... voids)
+    public String doInBackground(String... voids)
     {
 
         String url = voids[0];

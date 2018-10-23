@@ -16,7 +16,7 @@ public class ShutdownReceiver extends BroadcastReceiver
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		try
+		/*try
 		{
 			System.out.println("SHUTDOWN STARTED\n\n");
 			Login_Page loginPage = new Login_Page();
@@ -37,6 +37,6 @@ public class ShutdownReceiver extends BroadcastReceiver
 		{
 			e.printStackTrace();
 			System.out.println(e);
-		}
+		}*/
 	}
 }

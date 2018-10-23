@@ -24,8 +24,7 @@
         android:keepScreenOn="true"
         android:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_appinfo_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_appinfo_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -85,6 +84,16 @@
                     android:textStyle="bold"
                     android:visibility="visible" />
 
+                <TextView
+                    android:id="@+id/textView_Logged_User"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textDirection="ltr"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
             </LinearLayout>
 
         </LinearLayout>
@@ -94,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="15dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -104,6 +113,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="5dp"
                 tools:ignore="UselessParent">
 
                 <TextView
@@ -173,7 +187,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="15dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -182,27 +196,25 @@
                 android:id="@+id/fullscreen_content_info_controls_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
                 android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="5dp"
                 tools:ignore="UselessParent">
-
-                <TextView
-                    android:id="@+id/textView_Logged_User1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Hi"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/textView_Mobile_Details"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Last logged in user details\n"
+                    android:text="Last logged in user details"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="16dp"
@@ -216,6 +228,9 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="5dip"
                     android:fillViewport="true"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="5dp"
                     android:scrollbarStyle="outsideInset"
                     android:scrollbars="horizontal">
 
@@ -223,8 +238,10 @@
                         android:id="@+id/horizontalView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dip"
                         android:layout_gravity="center"
+                        android:layout_marginTop="5dip"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:scrollbars="horizontal">
 
                         <LinearLayout
@@ -238,8 +255,13 @@
                             <TableLayout
 
                                 android:id="@+id/tableLayout_LoggedIn_Details"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginTop="5dp"
                                 android:dividerPadding="2dp"
                                 android:visibility="visible">
 
@@ -363,7 +385,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="15dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -372,20 +394,19 @@
                 android:id="@+id/fullscreen_content_logout_controls_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
                 android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="5dp"
                 tools:ignore="UselessParent">
-
-                <TextView
-                    android:id="@+id/textView_Logged_User"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Hi"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textDirection="ltr"
-                    android:textSize="16dp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/textView_confirm_password"
@@ -402,7 +423,7 @@
                 <EditText
                     android:id="@+id/editText_confirm_password"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="27dp"
                     android:layout_gravity="center"
                     android:ems="10"
                     android:inputType="textPassword"
@@ -424,11 +445,12 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/fullscreen_content_admin_controls_horizontal"
+        <LinearLayout
+            android:id="@+id/fullscreen_content_admin_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="15dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">

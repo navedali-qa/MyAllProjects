@@ -20,38 +20,26 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.sql.ResultSet;
+
+import com.example.navedali.devicelogger.OtherPages.DatabaseMethods;
+import com.example.navedali.devicelogger.OtherPages.Variables;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.xml.datatype.Duration;
 
 public class Login_Page extends AppCompatActivity implements View.OnClickListener
 {
     //START SERVICE:
     //am startservice -n com.example.navedali.myapplication/.ReceiveUninstallService
 
-    private static final boolean AUTO_HIDE = true;
-    private static final int AUTO_HIDE_DELAY_MILLIS = 5;
     private static final int UI_ANIMATION_DELAY = 5;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
 
     //DATABASE VARIABLES:
-    DatabaseMethods databaseMethods;
-    ResultSet resultSet;
-    String serverUrl="192.168.57.1:3306";
-    //String serverUrl="10.148.1.66:3306";
-    static String apiUrl = "http://192.168.57.1:8081";
-    String database="360_logica_mobile_logger";
-    String userName="";
-    String logged_UserName="";
-    String userPassword="";
     String build_SERIAL="";
-    String backupAdminName="aa";
-    String backupUserName="bb";
 
     String updateUIFirstTimeResponse = "";
     String loginApiResponse = "";
@@ -72,7 +60,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public EditText editText_confirm_password;
 
     public TextView textView_Logged_User;
-    public TextView textView_Logged_User1;
     public  TextView textView_Logged_User_UpdatePassword;
     public TextView textView_ProjectInfo;
 
@@ -148,7 +135,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         tableLayout_LoggedIn_Details = (TableLayout) findViewById(R.id.tableLayout_LoggedIn_Details);
 
         textView_Logged_User = (TextView) findViewById(R.id.textView_Logged_User);
-        textView_Logged_User1 = (TextView) findViewById(R.id.textView_Logged_User1);
         textView_ProjectInfo = (TextView) findViewById(R.id.textView_ProjectInfo);
         //Logout process
         editText_confirm_password = (EditText) findViewById(R.id.editText_confirm_password);
@@ -172,18 +158,17 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 updateProject();
-                updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
+                updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
                 if (updateUIFirstTimeResponse.contains("User not logged in") || updateUIFirstTimeResponse.contains("Something wrong!!!"))
                 {
                     fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    logged_UserName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"LastName");
-                    userPassword = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Password");
-                    userName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Username");
-                    textView_Logged_User.setText("Logged in User : " + logged_UserName + "\n\n");
-                    textView_Logged_User1.setText("Logged in User : " + logged_UserName + "\n");
+                    Variables.logged_UserName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"LastName");
+                    Variables.userPassword = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Password");
+                    Variables.userName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Username");
+                    textView_Logged_User.setText("Logged in User : " + Variables.logged_UserName + "\n\n");
                     fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                     if (fullscreen_content_logout_controls_horizontal.getVisibility() == View.VISIBLE)
                     {
@@ -342,29 +327,29 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     networkConnected[0] =false;
                 }
                 else
-                if(editText_username.getText().toString().equals(backupAdminName) && editText_password.getText().toString().equals(backupAdminName))
+                if(editText_username.getText().toString().equals(Variables.backupAdminName) && editText_password.getText().toString().equals(Variables.backupAdminName))
                 {
                     loginAdmin[0] = true;
                 }
                 else
-                if(editText_username.getText().toString().equals(backupUserName) && editText_password.getText().toString().equals(backupUserName))
+                if(editText_username.getText().toString().equals(Variables.backupUserName) && editText_password.getText().toString().equals(Variables.backupUserName))
                 {
-                    userName=backupUserName;
-                    userPassword=backupUserName;
-                    logged_UserName = "Dummy User";
+                    Variables.userName=Variables.backupUserName;
+                    Variables.userPassword=Variables.backupUserName;
+                    Variables.logged_UserName = "Dummy User";
                     loginUser[0] = true;
                     networkConnected[0] =false;
                 }
                 else
                 {
-                    logged_UserName="";
+                    Variables.logged_UserName="";
                     runOnUiThread(new Runnable()
                     {
                         @Override
                         public void run() {
                             try
                             {
-                                loginApiResponse = getDatabaseMethods().doInBackground(apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
+                                loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
 
                                 if (!loginApiResponse.contains("Login credentials are wrong. Please try again!") && !loginApiResponse.contains("Something wrong!!!"))
                                 {
@@ -372,15 +357,17 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                                 }
                                 if(!loginApiResponse.contains("Something wrong!!!"))
                                 {
-                                    if (!loginAdmin[0]) {
-                                        loginApiResponse = getDatabaseMethods().doInBackground(apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
+                                    if (!loginAdmin[0])
+                                    {
+                                        loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString().trim()+"&project="+textView_ProjectInfo.getText().toString().replaceAll("Project : ","").trim());
                                         System.out.println("RESPONSE : " + loginApiResponse);
                                         if (loginApiResponse.contains("Login credentials are wrong. Please try again!") || loginApiResponse.contains("Something wrong!!!")) {
                                             loginUser[0] = false;
                                         } else {
-                                            logged_UserName = getDatabaseMethods().parseJSON(loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(loginApiResponse, "LastName");
-                                            userName = getDatabaseMethods().parseJSON(loginApiResponse, "Username");
-                                            userPassword = getDatabaseMethods().parseJSON(loginApiResponse, "Password");
+                                            Variables.logged_UserName = getDatabaseMethods().parseJSON(loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(loginApiResponse, "LastName");
+                                            Variables.userName = getDatabaseMethods().parseJSON(loginApiResponse, "Username");
+                                            Variables.userPassword = getDatabaseMethods().parseJSON(loginApiResponse, "Password");
+                                            textView_Logged_User.setText("Hi : "+Variables.logged_UserName);
                                             loginUser[0] = true;
                                         }
                                     }
@@ -425,15 +412,14 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     build_SERIAL = Build.SERIAL;
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     build_SERIAL=Build.SERIAL;
-                    textView_Logged_User1.setText("Logged in User : " + logged_UserName+"\n");
                     fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
                     fullscreen_content_info_controls_horizontal.setVisibility(View.VISIBLE);
 
-                    if(!userName.equals(backupUserName))
+                    if(!Variables.userName.equals(Variables.backupUserName))
                     {
                         sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                        String query = "UserName=" + userName + "&Mobile_Serial_Number="+ Build.SERIAL +"&Start_Time=" + sdf.format(new Date()).replaceAll(" ","%20")+ "&End_Time=LOCKED&Brand="+Build.BRAND+"&Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") + "&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
-                        insertLoginInfoResponse = getDatabaseMethods().doInBackground(apiUrl + "/DeviceLoggerAPI/Api/insertLoginInfo.php?" + query);
+                        String query = "UserName=" + Variables.userName + "&Mobile_Serial_Number="+ Build.SERIAL +"&Start_Time=" + sdf.format(new Date()).replaceAll(" ","%20")+ "&End_Time=LOCKED&Brand="+Build.BRAND+"&Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") + "&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
+                        insertLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/insertLoginInfo.php?" + query);
                     }
                 }
                 else
@@ -455,8 +441,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                textView_Logged_User.setText("Logged in User : " + logged_UserName+"\n\n");
-                textView_Logged_User1.setText("Logged in User : " + logged_UserName+"\n");
+                textView_Logged_User.setText("Logged in User : " + Variables.logged_UserName+"\n\n");
                 fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
                 fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                 resetFields();
@@ -477,7 +462,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                if (editText_confirm_password.getText().toString().equals(userPassword))
+                if (editText_confirm_password.getText().toString().equals(Variables.userPassword))
                 {
                     myTimerTask = new MyTimerTask();
                     timer = new Timer();
@@ -489,9 +474,9 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
                     sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    String query = "End_Time=" + sdf.format(new Date()).replaceAll(" ","%20") + "&Mobile_Serial_Number="+ Build.SERIAL +"&UserName="+userName;
-                    updateLoginInfoResponse = getDatabaseMethods().doInBackground(apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
-                    userName="";
+                    String query = "End_Time=" + sdf.format(new Date()).replaceAll(" ","%20") + "&Mobile_Serial_Number="+ Build.SERIAL +"&UserName="+Variables.userName;
+                    updateLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
+                    Variables.userName="";
                 }
                 else
                 if (editText_confirm_password.getText().toString().trim().equals(""))
@@ -511,7 +496,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public void addDeviceInfo()
     {
         String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
-        addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
         editText_username.setText("");
         editText_password.setText("");
@@ -581,7 +566,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     e.printStackTrace();
                 }*/
                 String query="Mobile_Serial_Number="+Build.SERIAL;
-                updateRecentUserApiResponse = getDatabaseMethods().doInBackground(apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsers.php?"+query);
+                updateRecentUserApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsers.php?"+query);
                 String value = getDatabaseMethods().parseJSONArray(updateRecentUserApiResponse,"UserName");
                 table_User_Name.setText(value);
                 value = getDatabaseMethods().parseJSONArray(updateRecentUserApiResponse,"Start_Time");
@@ -631,7 +616,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20")+"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
-                getProjectNameResponse = getDatabaseMethods().doInBackground(apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
+                getProjectNameResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
                 String project_Name = getDatabaseMethods().parseJSON(getProjectNameResponse,"Project");
                 if(project_Name=="" || project_Name.contains("Something wrong!!!"))
                 {

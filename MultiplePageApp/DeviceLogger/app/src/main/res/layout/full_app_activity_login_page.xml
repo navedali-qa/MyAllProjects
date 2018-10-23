@@ -174,7 +174,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="gone"
             tools:ignore="UselessParent">
 
             <LinearLayout

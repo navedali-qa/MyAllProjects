@@ -32,16 +32,16 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         variables = new Variables();
 
         WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wmgr.setWifiEnabled(true);
 
         setContentView(R.layout.activity_user_details_info);
-        textView_Logged_User = findViewById(R.id.textView_Logged_User);
+        textView_Logged_User =(TextView) findViewById(R.id.textView_Logged_User);
         textView_Logged_User.setText(Variables.loggedUserName+"\n\n");
         updateProject();
+        timerStart();
     }
 
     @Override
@@ -59,7 +59,6 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
     @Override
     protected void onPause()
     {
-        timerStart();
         super.onPause();
     }
 
@@ -100,13 +99,10 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
             @Override
             public void run()
             {
-                myTimerTask = new UserDetailsInfoActivity.MyTimerTask();
-                timer = new Timer();
                 timer.cancel();
                 finish();
-                Intent intent = new Intent(getApplicationContext(), LogoutPageActivity.class);
+                Intent intent = new Intent(UserDetailsInfoActivity.this, LogoutPageActivity.class);
                 startActivity(intent);
-                Variables.back=true;
             }
         });
     }
@@ -166,6 +162,7 @@ public class UserDetailsInfoActivity extends AppCompatActivity  implements View.
                 }
             }});
     }
+
     private void bringApplicationToFront()
     {
         KeyguardManager myKeyManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
