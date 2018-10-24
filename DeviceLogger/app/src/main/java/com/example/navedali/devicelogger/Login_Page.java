@@ -145,6 +145,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         fullscreen_content_logout_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_logout_controls_horizontal);
         fullscreen_content_admin_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_admin_controls_horizontal);
 
+        startService(new Intent(getBaseContext(), CheckCurrentApplication.class));
         updateUIFirstTime();
         resetFields();
     }
