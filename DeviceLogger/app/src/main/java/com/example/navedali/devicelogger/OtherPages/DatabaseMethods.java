@@ -23,8 +23,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class DatabaseMethods extends AsyncTask<String, Void, String>
 {
@@ -106,6 +111,8 @@ e.printStackTrace();
     {
 
         String url = voids[0];
+        //okHttpGet(voids[0]);
+        //System.out.println("\n\ndoInBackground starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
         StringBuffer response = new StringBuffer();
         try {
             URL obj = new URL(url);
@@ -126,6 +133,25 @@ e.printStackTrace();
             e.printStackTrace();
             response.append("Something wrong!!!");
         }
+        //System.out.println("\n\ndoInBackground End at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
         return response.toString();
+    }
+
+    public void okHttpGet(String url)
+    {
+        System.out.println("\n\nokHttpGet starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+            .url(url)
+            .build();
+        Response response=null;
+        try {
+            response = client.newCall(request).execute();
+            System.out.println("RESULT : "+url+"\n"+response.body().string());
+        }catch(Exception e){}
+
+
+        System.out.println("\n\nokHttpGet End at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
     }
 }

@@ -90,7 +90,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="15dp"
-                    android:text="sdfsdfdsfwrew"
                     android:textDirection="ltr"
                     android:textSize="16dp"
                     android:textStyle="bold"
