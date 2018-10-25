@@ -41,14 +41,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     //DATABASE VARIABLES:
     String build_SERIAL="";
 
-    String updateUIFirstTimeResponse = "";
-    String loginApiResponse = "";
-    String insertLoginInfoResponse = "";
-    String addDeviceDetailsApiResponse = "";
-    String getProjectNameResponse = "";
-    String updateLoginInfoResponse = "";
-    String updateRecentUserApiResponse = "";
-
     //Custom Variable
     private Timer timer;
     private MyTimerTask myTimerTask;
@@ -147,6 +139,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
         startService(new Intent(getBaseContext(), CheckCurrentApplication.class));
         updateUIFirstTime();
+
         resetFields();
     }
 
@@ -159,16 +152,16 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 updateProject();
-                updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
-                if (updateUIFirstTimeResponse.contains("User not logged in") || updateUIFirstTimeResponse.contains("Something wrong!!!"))
+                Variables.updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
+                if (Variables.updateUIFirstTimeResponse.contains("User not logged in") || Variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
                 {
                     fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    Variables.logged_UserName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"LastName");
-                    Variables.userPassword = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Password");
-                    Variables.userName = getDatabaseMethods().parseJSON(updateUIFirstTimeResponse,"Username");
+                    Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"LastName");
+                    Variables.userPassword = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"Password");
+                    Variables.userName = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"Username");
                     textView_Logged_User.setText("Logged in User : " + Variables.logged_UserName + "\n\n");
                     fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                     if (fullscreen_content_logout_controls_horizontal.getVisibility() == View.VISIBLE)
@@ -178,7 +171,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                         timer = null;
                     }
                 }
-                updateUIFirstTimeResponse="";
+                Variables.updateUIFirstTimeResponse="";
             }});
     }
 
@@ -350,25 +343,25 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                         public void run() {
                             try
                             {
-                                loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
+                                Variables.loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
 
-                                if (!loginApiResponse.contains("Login credentials are wrong. Please try again!") && !loginApiResponse.contains("Something wrong!!!"))
+                                if (!Variables.loginApiResponse.contains("Login credentials are wrong. Please try again!") && !Variables.loginApiResponse.contains("Something wrong!!!"))
                                 {
                                         loginAdmin[0] = true;
                                 }
-                                if(!loginApiResponse.contains("Something wrong!!!"))
+                                if(!Variables.loginApiResponse.contains("Something wrong!!!"))
                                 {
                                     if (!loginAdmin[0])
                                     {
-                                        loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString().trim()+"&project="+textView_ProjectInfo.getText().toString().replaceAll("Project : ","").trim());
-                                        System.out.println("RESPONSE : " + loginApiResponse);
-                                        if (loginApiResponse.contains("Login credentials are wrong. Please try again!") || loginApiResponse.contains("Something wrong!!!")) {
+                                        Variables.loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString().trim()+"&project="+textView_ProjectInfo.getText().toString().replaceAll("Project : ","").trim());
+                                        System.out.println("RESPONSE : " + Variables.loginApiResponse);
+                                        if (Variables.loginApiResponse.contains("Login credentials are wrong. Please try again!") || Variables.loginApiResponse.contains("Something wrong!!!")) {
                                             loginUser[0] = false;
                                         } else {
-                                            Variables.logged_UserName = getDatabaseMethods().parseJSON(loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(loginApiResponse, "LastName");
-                                            Variables.userName = getDatabaseMethods().parseJSON(loginApiResponse, "Username");
-                                            Variables.userPassword = getDatabaseMethods().parseJSON(loginApiResponse, "Password");
-                                            textView_Logged_User.setText("Hi : "+Variables.logged_UserName);
+                                            Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(Variables.loginApiResponse, "LastName");
+                                            Variables.userName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Username");
+                                            Variables.userPassword = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Password");
+                                            textView_Logged_User.setText("Logged User : "+Variables.logged_UserName);
                                             loginUser[0] = true;
                                         }
                                     }
@@ -378,7 +371,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                                     Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
                                     networkConnected[0] =false;
                                 }
-                                loginApiResponse="";
+                                Variables.loginApiResponse="";
                             }
                             catch(Exception e)
                             {
@@ -420,7 +413,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     {
                         sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                         String query = "UserName=" + Variables.userName + "&Mobile_Serial_Number="+ Build.SERIAL +"&Start_Time=" + sdf.format(new Date()).replaceAll(" ","%20")+ "&End_Time=LOCKED&Brand="+Build.BRAND+"&Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") + "&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
-                        insertLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/insertLoginInfo.php?" + query);
+                        Variables.insertLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/insertLoginInfo.php?" + query);
                     }
                 }
                 else
@@ -442,7 +435,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             @Override
             public void run()
             {
-                textView_Logged_User.setText("Logged in User : " + Variables.logged_UserName+"\n\n");
+                textView_Logged_User.setText("Logged User : " + Variables.logged_UserName+"\n\n");
                 fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
                 fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                 resetFields();
@@ -476,8 +469,10 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
                     sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     String query = "End_Time=" + sdf.format(new Date()).replaceAll(" ","%20") + "&Mobile_Serial_Number="+ Build.SERIAL +"&UserName="+Variables.userName;
-                    updateLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
+                    Variables.updateLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
                     Variables.userName="";
+                    Variables.logged_UserName="";
+                    textView_Logged_User.setText("");
                 }
                 else
                 if (editText_confirm_password.getText().toString().trim().equals(""))
@@ -497,7 +492,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     public void addDeviceInfo()
     {
         String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
-        addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        Variables.addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        System.out.println(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
         editText_username.setText("");
         editText_password.setText("");
@@ -567,12 +563,12 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     e.printStackTrace();
                 }*/
                 String query="Mobile_Serial_Number="+Build.SERIAL;
-                updateRecentUserApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsers.php?"+query);
-                String value = getDatabaseMethods().parseJSONArray(updateRecentUserApiResponse,"UserName");
+                Variables.updateRecentUserApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsers.php?"+query);
+                String value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"UserName");
                 table_User_Name.setText(value);
-                value = getDatabaseMethods().parseJSONArray(updateRecentUserApiResponse,"Start_Time");
+                value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"Start_Time");
                 table_Start_Time1.setText(value);
-                value = getDatabaseMethods().parseJSONArray(updateRecentUserApiResponse,"End_Time");
+                value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"End_Time");
                 table_End_Time1.setText(value);
             }
         });
@@ -617,8 +613,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             public void run()
             {
                 String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20")+"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches";
-                getProjectNameResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
-                String project_Name = getDatabaseMethods().parseJSON(getProjectNameResponse,"Project");
+                Variables.getProjectNameResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/getProjectName.php?"+query);
+                String project_Name = getDatabaseMethods().parseJSON(Variables.getProjectNameResponse,"Project");
                 if(project_Name=="" || project_Name.contains("Something wrong!!!"))
                 {
                     textView_ProjectInfo.setText("Project : Other_");
@@ -627,7 +623,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 {
                     textView_ProjectInfo.setText("Project : " + project_Name);
                 }
-                getProjectNameResponse = "";
+                Variables.getProjectNameResponse = "";
             }});
     }
 

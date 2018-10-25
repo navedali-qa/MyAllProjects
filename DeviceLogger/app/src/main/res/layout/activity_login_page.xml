@@ -89,6 +89,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:text="sdfsdfdsfwrew"
                     android:textDirection="ltr"
                     android:textSize="16dp"
                     android:textStyle="bold"
@@ -98,8 +100,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_login_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_login_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -187,7 +188,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:orientation="horizontal"
             android:visibility="gone"
             tools:ignore="UselessParent">
@@ -214,10 +215,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
                     android:text="Last logged in user details"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="16dp"
+                    android:textSize="15dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
@@ -380,8 +382,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_logout_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_logout_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -416,20 +417,20 @@
                     android:text="Enter Password to logout"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textDirection="ltr"
-                    android:textSize="18sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <EditText
                     android:id="@+id/editText_confirm_password"
                     android:layout_width="wrap_content"
-                    android:layout_height="27dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:ems="10"
-                    android:inputType="textPassword"
+                    android:hint="Password"
+                    android:inputType="textEmailAddress"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:textSize="15dp"
                     android:visibility="visible" />
 
                 <Button
@@ -445,8 +446,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_admin_controls_horizontal"
+        <LinearLayout android:id="@+id/fullscreen_content_admin_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
