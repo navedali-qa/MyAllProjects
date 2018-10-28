@@ -44,15 +44,18 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     //Custom Variable
     private Timer timer;
     private MyTimerTask myTimerTask;
+    PolicyManager policyManager;
 
-    //UI Fields
+    //Text Box
     public EditText editText_username;
     public EditText editText_password;
     public EditText editText_confirm_password;
+
     public TextView textView_Logged_User;
+    public  TextView textView_Logged_User_UpdatePassword;
     public TextView textView_ProjectInfo;
 
-    //UI Frame
+    //Frame
     public LinearLayout fullscreen_content_login_controls_horizontal;
     public LinearLayout fullscreen_content_info_controls_horizontal;
     public LinearLayout fullscreen_content_logout_controls_horizontal;
@@ -91,6 +94,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         }
     };
 
+    private boolean mVisible;
+
     private final Runnable mHideRunnable = new Runnable()
     {
         @Override
@@ -104,13 +109,14 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         super.onCreate(savedInstanceState);
 
-        Variables.policyManager = new PolicyManager(this);
+        policyManager = new PolicyManager(this);
 
-        Variables.wmgr= (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        Variables.wmgr.setWifiEnabled(true);
+        WifiManager wmgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wmgr.setWifiEnabled(true);
 
         setContentView(R.layout.activity_login_page);
 
+        mVisible = true;
         mContentView = findViewById(R.id.fullscreen_content);
         mControlsView = findViewById(R.id.All_Control);
 
@@ -146,8 +152,11 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             {
                 updateProject();
                 Variables.updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
-
-                if (!Variables.updateUIFirstTimeResponse.contains("\"error\":true") && !Variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
+                if (Variables.updateUIFirstTimeResponse.contains("User not logged in") || Variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
+                {
+                    fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+                }
+                else
                 {
                     Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"LastName");
                     Variables.userPassword = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"Password");
@@ -158,11 +167,8 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     {
                         Timer timer = new Timer();
                         timer.cancel();
+                        timer = null;
                     }
-                }
-                else
-                {
-                    fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
                 }
                 Variables.updateUIFirstTimeResponse="";
             }});
@@ -175,6 +181,15 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         delayedHide(5);
     }
 
+    private void toggle()
+    {
+        if (mVisible) {
+            hide();
+        } else {
+            // show();
+        }
+    }
+
     private void hide()
     {
         ActionBar actionBar = getSupportActionBar();
@@ -183,6 +198,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             actionBar.hide();
         }
         mControlsView.setVisibility(View.VISIBLE);
+        mVisible = false;
 
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
@@ -204,41 +220,55 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onClick(View v)
     {
+        LinearLayout fullscreen_content_login_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_login_controls_horizontal);
+        LinearLayout fullscreen_content_admin_controls_horizontal = (LinearLayout) findViewById(R.id.fullscreen_content_admin_controls_horizontal);
+        final EditText editText_username = (EditText) findViewById(R.id.editText_username);
+        final EditText editText_password = (EditText) findViewById(R.id.editText_password);
+
         switch (v.getId())
         {
             case R.id.add_device_Info:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addDeviceInfo();
-                    }});
+                    addDeviceInfo();
+                    updateProject();
                 break;
-
             case R.id.activate_admin:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activateAdmin();
-                    }
-                });
-                break;
-
-            case R.id.deactivate_admin:
-                runOnUiThread(new Runnable()
+                if (!policyManager.isAdminActive())
                 {
-                    @Override
-                    public void run() {
-                        deactivateAdmin();
-                    }});
+                    timer = new Timer();
+                    timer.cancel();
+                    Intent activateDeviceAdmin = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                    activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, policyManager.getAdminComponent());
+                    activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "After activating admin, you will be able to block application uninstallation.");
+                    startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
+                }
+                updateProject();
+                editText_username.setText("");
+                editText_password.setText("");
+                fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
+                fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+                timerStart();
                 break;
-
+            case R.id.deactivate_admin:
+                if (policyManager.isAdminActive())
+                {
+                    policyManager.disableAdmin();
+                }
+                updateProject();
+                editText_username.setText("");
+                editText_password.setText("");
+                fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
+                fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
+                timerStart();
+                break;
             case R.id.buttonLogin:
                 runOnUiThread(new Runnable()
                 {
                     @Override
                     public void run()
                     {
+                        hideKeypad();
                         loginToAppFunctionality();
+                        timerStart();
                     }});
                 break;
 
@@ -248,7 +278,12 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     @Override
                     public void run()
                     {
-                        proceedButtonFunctionality();
+                        proceedButtonFunctionality(true);
+                        myTimerTask = new MyTimerTask();
+                        timer = new Timer();
+                        timer.cancel();
+                        resetFields();
+                        updateProject();
                     }});
                 break;
 
@@ -258,45 +293,16 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     @Override
                     public void run()
                     {
+                        hideKeypad();
                         logoutButtonFunctionality();
+                        updateProject();
                     }});
                 break;
         }
     }
 
-    public void activateAdmin()
-    {
-        if (!Variables.policyManager.isAdminActive())
-        {
-            timer = new Timer();
-            timer.cancel();
-            Intent activateDeviceAdmin = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, Variables.policyManager.getAdminComponent());
-            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "After activating admin, you will be able to block application uninstallation.");
-            startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
-        }
-        resetFields();
-        fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-        fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-        timerStart();
-    }
-
-    public void deactivateAdmin()
-    {
-        if (Variables.policyManager.isAdminActive())
-        {
-            Variables.policyManager.disableAdmin();
-        }
-        editText_username.setText("");
-        editText_password.setText("");
-        fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-        fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-        timerStart();
-    }
-
     public void loginToAppFunctionality()
     {
-        hideKeypad();
         runOnUiThread(new Runnable()
         {
             @Override
@@ -304,7 +310,16 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             {
                 final boolean[] loginAdmin = {false};
                 final boolean[] loginUser = {false};
+                final boolean[] networkConnected = {true};
 
+                if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
+                {
+                    Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
+                    editText_username.setText("");
+                    editText_password.setText("");
+                    networkConnected[0] =false;
+                }
+                else
                 if(editText_username.getText().toString().equals(Variables.backupAdminName) && editText_password.getText().toString().equals(Variables.backupAdminName))
                 {
                     loginAdmin[0] = true;
@@ -316,44 +331,65 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                     Variables.userPassword=Variables.backupUserName;
                     Variables.logged_UserName = "Dummy User";
                     loginUser[0] = true;
-                }
-                else
-                if(editText_username.getText().toString().equals("") || editText_password.getText().toString().equals(""))
-                {
-                    Toast.makeText(Login_Page.this, "Enter username/password", Toast.LENGTH_SHORT).show();
-                    resetFields();
+                    networkConnected[0] =false;
                 }
                 else
                 {
-                    //*******************************************
-                            //ENTER LOGIN API PART HERE
-                    Variables.loginApiResponse=getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/login.php?username="+editText_username.getText().toString().trim()+"&password="+editText_password.getText().toString().trim()+"&project="+textView_ProjectInfo.getText().toString().replaceAll("Project : ","").trim());
-                    if(Variables.loginApiResponse.contains("FirstName"))
+                    Variables.logged_UserName="";
+                    runOnUiThread(new Runnable()
                     {
-                        if(Variables.loginApiResponse.contains("\"Admin\":1"))
-                        {
-                            loginAdmin[0]=true;
-                        }
-                        else
-                        if(Variables.loginApiResponse.contains("\"Admin\":0"))
-                        {
-                            Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(Variables.loginApiResponse, "LastName");
-                            Variables.userName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Username");
-                            Variables.userPassword = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Password");
-                            loginUser[0] = true;
-                        }
-                    }
-                    else
-                    {
-                        Variables.logged_UserName = "";
-                        resetFields();
-                    }
-                    //*******************************************
-                }
+                        @Override
+                        public void run() {
+                            try
+                            {
+                                Variables.loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/adminLogin.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString());
 
+                                if (!Variables.loginApiResponse.contains("Login credentials are wrong. Please try again!") && !Variables.loginApiResponse.contains("Something wrong!!!"))
+                                {
+                                        loginAdmin[0] = true;
+                                }
+                                if(!Variables.loginApiResponse.contains("Something wrong!!!"))
+                                {
+                                    if (!loginAdmin[0])
+                                    {
+                                        Variables.loginApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/login.php?username=" + editText_username.getText().toString().trim() + "&password=" + editText_password.getText().toString().trim()+"&project="+textView_ProjectInfo.getText().toString().replaceAll("Project : ","").trim());
+                                        System.out.println("RESPONSE : " + Variables.loginApiResponse);
+                                        if (Variables.loginApiResponse.contains("Login credentials are wrong. Please try again!") || Variables.loginApiResponse.contains("Something wrong!!!")) {
+                                            loginUser[0] = false;
+                                        } else {
+                                            Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "FirstName") + " " + getDatabaseMethods().parseJSON(Variables.loginApiResponse, "LastName");
+                                            Variables.userName = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Username");
+                                            Variables.userPassword = getDatabaseMethods().parseJSON(Variables.loginApiResponse, "Password");
+                                            textView_Logged_User.setText("Logged User : "+Variables.logged_UserName);
+                                            loginUser[0] = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                                    networkConnected[0] =false;
+                                }
+                                Variables.loginApiResponse="";
+                            }
+                            catch(Exception e)
+                            {
+                                Toast.makeText(Login_Page.this, "No internet connection!", Toast.LENGTH_SHORT).show();
+                                networkConnected[0] =false;
+                            }
+                        }});
+                }
                 if (loginAdmin[0])
                 {
-                    updateProject();
+                    if (!policyManager.isAdminActive())
+                    {
+                        timer = new Timer();
+                        timer.cancel();
+                        Intent activateDeviceAdmin = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                        activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, policyManager.getAdminComponent());
+                        activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "After activating admin, you will be able to block application uninstallation.");
+                        startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
+                    }
                     fullscreen_content_login_controls_horizontal.setVisibility(View.GONE);
                     fullscreen_content_admin_controls_horizontal.setVisibility(View.VISIBLE);
                     timer = new Timer();
@@ -362,7 +398,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 else
                 if (loginUser[0])
                 {
-                    textView_Logged_User.setText("Logged User : " + Variables.logged_UserName+"\n\n");
+                    updateProject();
                     updateRecentlyUserTable();
 
                     System.out.println("DEVICE DETAILS :\n"
@@ -390,35 +426,39 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 }
                 else
                 {
-                    Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    if(networkConnected[0])
+                    {
+                        Toast.makeText(Login_Page.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    }
                     resetFields();
                 }
             }
         });
-        timerStart();
     }
 
-    public void proceedButtonFunctionality()
+    public void proceedButtonFunctionality(final boolean hide)
     {
         runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
+                textView_Logged_User.setText("Logged User : " + Variables.logged_UserName+"\n\n");
                 fullscreen_content_info_controls_horizontal.setVisibility(View.GONE);
                 fullscreen_content_logout_controls_horizontal.setVisibility(View.VISIBLE);
                 resetFields();
                 myTimerTask = new MyTimerTask();
                 timer = new Timer();
                 timer.cancel();
-                moveTaskToBack(true);
+                if(hide) {
+                    moveTaskToBack(true);
+                }
             }
         });
     }
 
     public void logoutButtonFunctionality()
     {
-        hideKeypad();
         runOnUiThread(new Runnable()
         {
             @Override
@@ -426,7 +466,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             {
                 if (editText_confirm_password.getText().toString().equals(Variables.userPassword))
                 {
-                    updateProject();
                     myTimerTask = new MyTimerTask();
                     timer = new Timer();
                     timer.schedule(myTimerTask, 0);
@@ -438,13 +477,10 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
                     sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     String query = "End_Time=" + sdf.format(new Date()).replaceAll(" ","%20") + "&Mobile_Serial_Number="+ Build.SERIAL +"&UserName="+Variables.userName;
-                    if(!Variables.userPassword.equals(Variables.backupUserName))
-                    {
-                        Variables.updateLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
-                    }
+                    Variables.updateLoginInfoResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/updateLoginInfo.php?" + query);
                     Variables.userName="";
                     Variables.logged_UserName="";
-                    textView_Logged_User.setText(Variables.logged_UserName);
+                    textView_Logged_User.setText("");
                 }
                 else
                 if (editText_confirm_password.getText().toString().trim().equals(""))
@@ -465,24 +501,13 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
     {
         String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
         Variables.addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
+        System.out.println(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
         editText_username.setText("");
         editText_password.setText("");
         fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
         timerStart();
-        if(Variables.addDeviceDetailsApiResponse.contains("New device added successfully"))
-        {
-            Toast.makeText(Login_Page.this, "Device Info Added", Toast.LENGTH_SHORT).show();
-        }
-        else
-            if(Variables.addDeviceDetailsApiResponse.contains("Device Already Added"))
-        {
-            Toast.makeText(Login_Page.this, "Device Already Added", Toast.LENGTH_SHORT).show();
-        }
-        else
-            {
-                Toast.makeText(Login_Page.this, "Error occured Please contact Admin", Toast.LENGTH_SHORT).show();
-            }
+        Toast.makeText(Login_Page.this, "Device Info Added", Toast.LENGTH_SHORT).show();
     }
 
     //DISABLE ANDROID BUTTONS
@@ -524,17 +549,35 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
                 table_User_Name.setText(" ");
                 table_Start_Time1.setText(" ");
                 table_End_Time1.setText(" ");
+                /*try
+                {
+                    System.out.println("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
+                    resultSet = databaseMethods.executeQuery("SELECT UserName, Start_Time, End_Time FROM `login_info` WHERE `Mobile_Serial_Number`=\"" + Build.SERIAL + "\" ORDER BY Login_Index DESC LIMIT 5");
+                    while (resultSet.next())
+                    {
+                        ResultSet resultSet1 = databaseMethods.executeQuery("SELECT * FROM users WHERE Username='" + resultSet.getString(1) + "'");
+                        while (resultSet1.next())
+                        {
+                            //System.out.println(lastUser+"\t"+resultSet.getString(2)+"\t"+resultSet.getString(3));
+                            lastUser = resultSet1.getString(2) + " " + resultSet1.getString(3);
+                            table_User_Name.setText(table_User_Name.getText() + lastUser + "  \n");
+                            table_Start_Time1.setText(table_Start_Time1.getText() + resultSet.getString(2) + "  \n");
+                            table_End_Time1.setText(table_End_Time1.getText() + resultSet.getString(3) + "  \n");
+                        }
+                    }
+                    resultSet.close();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }*/
                 String query="Mobile_Serial_Number="+Build.SERIAL;
                 Variables.updateRecentUserApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsers.php?"+query);
-                if(!Variables.updateRecentUserApiResponse.contains("\"error\":true"))
-                {
-                    String value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse, "UserName");
-                    table_User_Name.setText(value);
-                    value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse, "Start_Time");
-                    table_Start_Time1.setText(value);
-                    value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse, "End_Time");
-                    table_End_Time1.setText(value);
-                }
+                String value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"UserName");
+                table_User_Name.setText(value);
+                value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"Start_Time");
+                table_Start_Time1.setText(value);
+                value = getDatabaseMethods().parseJSONArray(Variables.updateRecentUserApiResponse,"End_Time");
+                table_End_Time1.setText(value);
             }
         });
     }
@@ -634,7 +677,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         }});
         return db[0];
     }
-
     class MyTimerTask extends TimerTask
     {
         @Override

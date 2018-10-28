@@ -4,15 +4,16 @@
 	
 	$response = array();
 
-	if (isset($_GET['username']) && isset($_GET['password'])) 
+	if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['project'])) 
 	{
 	 
 		// receiving the post params
 		$username = $_GET['username'];
 		$password = $_GET['password'];
-	 
+		$project = $_GET['project'];
+		
 		// get the user by username and password
-		$user = $db->getUserByusernameAndPassword($username, $password);
+		$user = $db->getUserByusernameAndPassword($username, $password, $project);
 	 
 		if ($user != false) 
 		{
@@ -21,6 +22,7 @@
 			$response["LastName"] = $user["LastName"];
 			$response["Username"] = $user["Username"];
 			$response["Password"] = $user["Password"];
+			$response["Admin"] = $user["Admin"];
 			echo json_encode($response);
 		}
 		else 

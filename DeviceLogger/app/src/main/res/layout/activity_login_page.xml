@@ -99,7 +99,8 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/fullscreen_content_login_controls_horizontal"
+        <LinearLayout
+            android:id="@+id/fullscreen_content_login_controls_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -237,8 +238,8 @@
 
                     <HorizontalScrollView
                         android:id="@+id/horizontalView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:layout_marginTop="5dip"
                         android:paddingLeft="5dp"
@@ -256,8 +257,8 @@
                             <TableLayout
 
                                 android:id="@+id/tableLayout_LoggedIn_Details"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:layout_margin="5dp"
                                 android:layout_marginBottom="5dp"
                                 android:layout_marginLeft="5dp"
@@ -275,8 +276,9 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_column="1"
-                                        android:gravity="center"
-                                        android:text="\t\t\tS.No."
+                                        android:layout_marginLeft="20dp"
+                                        android:gravity="right"
+                                        android:text="S.No."
                                         android:textSize="18dp"
                                         android:textStyle="bold" />
 
@@ -302,7 +304,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_column="4"
-                                        android:gravity="center"
+                                        android:gravity="right|fill"
                                         android:text=" End Time "
                                         android:textSize="18dp"
                                         android:textStyle="bold" />
@@ -319,7 +321,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_column="1"
-                                        android:gravity="center"
+                                        android:layout_marginLeft="30dp"
+                                        android:gravity="right"
                                         android:text=" 1. \n 2. \n 3. \n 4. \n 5. "
                                         android:textSize="14dp"
                                         android:textStyle="normal"
@@ -352,7 +355,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_column="4"
-                                        android:gravity="center"
+                                        android:gravity="left"
                                         android:text=""
                                         android:textSize="14dp"
                                         android:textStyle="normal"

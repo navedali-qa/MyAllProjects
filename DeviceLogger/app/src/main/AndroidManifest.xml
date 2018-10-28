@@ -36,6 +36,7 @@
             android:showOnLockScreen="true"
             android:stateNotNeeded="true"
             android:theme="@style/FullscreenTheme"
+            android:resizeableActivity="false"
             android:visibleToInstantApps="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,10 +77,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".CheckCurrentApplication"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

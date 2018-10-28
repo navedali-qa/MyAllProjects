@@ -15,9 +15,10 @@
 		// get the user by username and password
 		$user = $db->updateLoginInfo($End_Time, $Mobile_Serial_Number, $UserName);
 	 
-		if ($user != false) 
+		$response["Message"]=$user;
+	 
+		if ($user === "Record updated successfully") 
 		{
-			$response["successMessage"] = "Record updated successfully";
 			echo json_encode($response);
 		}
 		else 

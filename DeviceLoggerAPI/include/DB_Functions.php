@@ -16,16 +16,28 @@
 		{
 		}
 	 	 
-		public function getUserByusernameAndPassword($username, $password) 
+		public function getUserByusernameAndPassword($username, $password, $project) 
 		{
 			$stmt = $this->conn->prepare("SELECT * FROM users WHERE Username = ? AND Password = ?");
-	 
 			$stmt->bind_param("ss", $username, $password);
-	 
+			
+			$stmt1 = $this->conn->prepare("SELECT * FROM users WHERE Username = ? AND Password = ? AND Project LIKE ?");
+			$stmt1->bind_param("sss", $username, $password, $project);			
+			
 			if ($stmt->execute()) 
 			{
 				$user = $stmt->get_result()->fetch_assoc();
+				
+				if($user["Admin"]==0)
+				{
+					if ($stmt1->execute()) 
+					{
+						$user = $stmt1->get_result()->fetch_assoc();
+					}
+				}
+				
 				$stmt->close();
+				$stmt1->close();
 				return $user;
 			}
 			else 
@@ -33,23 +45,6 @@
 				return NULL;
 			}
 		}
-		
-		public function getAdminByusernameAndPassword($username, $password) 
-		{
-			$stmt = $this->conn->prepare("SELECT * FROM admin WHERE Admin_UserName = ? AND Admin_Password = ?");
-			$stmt->bind_param("ss", $username, $password);
-	 
-			if ($stmt->execute()) 
-			{
-				$user = $stmt->get_result()->fetch_assoc();
-				$stmt->close();
-				return $user;
-			}
-			else 
-			{
-				return NULL;
-			}
-		}		
 		
 		public function getLogedInUser($Mobile_Serial_Number) 
 		{
@@ -102,11 +97,16 @@
 		public function updateLoginInfo($End_Time, $Mobile_Serial_Number, $UserName)
 		{
 			$sql = "UPDATE login_info SET End_Time = '". $End_Time ."' WHERE Mobile_Serial_Number = '". $Mobile_Serial_Number ."' AND UserName = '" . $UserName. "' AND End_Time = 'LOCKED'";
-			echo "SQL : ".$sql."\n";
-			
-			if ($this ->conn->query($sql) === TRUE)
+			if ($this->conn->query($sql) === TRUE)
 			{
-				return "Record updated successfully";
+				if(mysqli_affected_rows($this->conn)>=1)
+				{
+					return "Record updated successfully";
+				}
+				else
+				{
+					return "No Record updated";
+				}
 			}
 			else 
 			{
@@ -118,13 +118,13 @@
 		{
 			$sql = "INSERT INTO device_details (Mobile_Name, Brand, Mobile_Serial_Number, Version, Screen_Size, Project) VALUES ('".$Mobile_Name."', '".$Brand."', '".$Mobile_Serial_Number."', '".$Version."', '".$Screen_Size."', '".$Project."')";
 		 
-			if ($this ->conn->query($sql) === TRUE)
+			if ($this->conn->query($sql) === TRUE)
 			{
-				return "New record created successfully";
+				return "New device added successfully";
 			}
 			else 
 			{
-				return "Error: " . $sql . "<br>" . $conn->error;
+				return "Device Already Added<br>Error: " . $sql . "<br>" . $this->conn->error;
 			}
 		 }
 	

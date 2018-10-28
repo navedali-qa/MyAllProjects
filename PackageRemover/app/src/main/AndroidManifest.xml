@@ -13,16 +13,16 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-<!--            <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
 
         <receiver android:name=".UnInstallApplicationReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"></action>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
 
                 <data android:scheme="package" />
             </intent-filter>
@@ -31,7 +31,16 @@
         <service
             android:name=".ReceiveUninstallService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+        <service
+            android:name=".AccessService"
+            android:permission="android:permission.BIND_ACCESSIBLITY_SERVICE"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityService.AccessibilityService"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

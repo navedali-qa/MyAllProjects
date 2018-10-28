@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         startService(new Intent(getBaseContext(), ReceiveUninstallService.class));
+        stopService(new Intent(getBaseContext(), ReceiveUninstallService.class));
+        startService(new Intent(getBaseContext(),AccessService.class));
     }
 
     @Override

@@ -87,7 +87,7 @@ public class DatabaseMethods extends AsyncTask<String, Void, String>
             for (int i=0;i<5;i++)
             {
                 JSONObject myResponse = new JSONObject(myArray.get(i).toString());
-                if(key=="UserName")
+                if(key.equals("UserName"))
                 {
                     String test = getMethod(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateRecentUsersName.php?Username="+myResponse.getString(key));
                     test = parseJSON(test,"FirstName")+" "+parseJSON(test,"LastName");
@@ -101,7 +101,7 @@ public class DatabaseMethods extends AsyncTask<String, Void, String>
         }
         catch(Exception e)
         {
-e.printStackTrace();
+            e.printStackTrace();
         }
         return value;
     }
@@ -109,49 +109,27 @@ e.printStackTrace();
     @Override
     public String doInBackground(String... voids)
     {
-
         String url = voids[0];
-        //okHttpGet(voids[0]);
-        //System.out.println("\n\ndoInBackground starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
-        StringBuffer response = new StringBuffer();
-        try {
-            URL obj = new URL(url);
-
-            HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            con.setConnectTimeout(5000);
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            response.append("Something wrong!!!");
-        }
-        //System.out.println("\n\ndoInBackground End at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
-        return response.toString();
+        return okHttpGet(url);
     }
 
-    public void okHttpGet(String url)
+    public String okHttpGet(String url)
     {
-        System.out.println("\n\nokHttpGet starts at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
         OkHttpClient client = new OkHttpClient();
-
+        String responseValue="";
         Request request = new Request.Builder()
             .url(url)
             .build();
         Response response=null;
-        try {
+        try
+        {
             response = client.newCall(request).execute();
-            System.out.println("RESULT : "+url+"\n"+response.body().string());
-        }catch(Exception e){}
-
-
-        System.out.println("\n\nokHttpGet End at : "+new SimpleDateFormat("dd-MM-yyy HH:mm:ss").format(Calendar.getInstance().getTime())+"\n\n");
+            responseValue = response.body().string();
+        }
+        catch(Exception e)
+        {
+         responseValue="Something wrong!!!";
+        }
+        return responseValue;
     }
 }

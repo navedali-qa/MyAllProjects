@@ -18,7 +18,14 @@
 	 
 		if ($user != false) 
 		{
-			$response["successMessage"] = "New device added successfully";
+			if(strpos($user,"Device Already Added") !== false)
+			{
+				$response["successMessage"] = "Device Already Added";
+			}
+			else
+			{
+				$response["successMessage"] = "New device added successfully";
+			}
 			echo json_encode($response);
 		}
 		else 
