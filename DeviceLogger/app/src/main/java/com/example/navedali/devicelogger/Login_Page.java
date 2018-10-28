@@ -275,6 +275,10 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "After activating admin, you will be able to block application uninstallation.");
             startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
         }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Already have admin privileges",Toast.LENGTH_SHORT).show();
+        }
         resetFields();
         fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
@@ -283,15 +287,21 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
     public void deactivateAdmin()
     {
+        myTimerTask = new MyTimerTask();
+        timer = new Timer();
+        timer.schedule(myTimerTask, 0);
         if (Variables.policyManager.isAdminActive())
         {
             Variables.policyManager.disableAdmin();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Admin privileges already removed",Toast.LENGTH_SHORT).show();
         }
         editText_username.setText("");
         editText_password.setText("");
         fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
-        timerStart();
     }
 
     public void loginToAppFunctionality()
@@ -463,13 +473,15 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
 
     public void addDeviceInfo()
     {
+        myTimerTask = new MyTimerTask();
+        timer = new Timer();
+        timer.schedule(myTimerTask, 0);
         String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
         Variables.addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
         editText_username.setText("");
         editText_password.setText("");
         fullscreen_content_admin_controls_horizontal.setVisibility(View.GONE);
-        timerStart();
         if(Variables.addDeviceDetailsApiResponse.contains("New device added successfully"))
         {
             Toast.makeText(Login_Page.this, "Device Info Added", Toast.LENGTH_SHORT).show();

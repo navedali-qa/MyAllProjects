@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.navedali.packageremover">
 
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -41,6 +43,7 @@
                 <action android:name="android.accessibilityService.AccessibilityService"/>
             </intent-filter>
         </service>
+
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.example.navedali.packageremover;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(getBaseContext(), ReceiveUninstallService.class));
         stopService(new Intent(getBaseContext(), ReceiveUninstallService.class));
         startService(new Intent(getBaseContext(),AccessService.class));
+
+       /* PackageManager pm = getPackageManager();
+
+        pm.setComponentEnabledSetting(new ComponentName("com.android.settings.applications","InstalledAppDetailsTop" ),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);*/
     }
 
     @Override

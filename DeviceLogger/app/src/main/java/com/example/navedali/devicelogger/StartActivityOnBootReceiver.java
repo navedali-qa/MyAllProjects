@@ -14,12 +14,17 @@ public class StartActivityOnBootReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
+        if (
+                intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
                 || intent.getAction().equals(Intent.ACTION_SCREEN_ON)
                 || intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)
                 || intent.getAction().equals(Intent.FLAG_RECEIVER_FOREGROUND)
-                ||intent.getAction().equals(Intent.ACTION_USER_PRESENT)
-                ||intent.getAction().equals(Intent.ACTION_USER_UNLOCKED)) {
+                || intent.getAction().equals(Intent.ACTION_USER_PRESENT)
+                || intent.getAction().equals(Intent.ACTION_USER_UNLOCKED)
+                || intent.getAction().equals(Intent.ACTION_LOCKED_BOOT_COMPLETED)
+                || intent.getAction().equals(Intent.ACTION_REBOOT)
+                )
+        {
             start_LoginPage(context);
         }
     }

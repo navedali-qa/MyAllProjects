@@ -7,7 +7,7 @@ import com.example.navedali.devicelogger.PolicyManager;
 public class Variables
 {
 
-    public static String apiUrl = "http://192.168.57.1:8081";
+    public static String apiUrl = "http://192.168.0.106:8081";
     public static String database="360_logica_mobile_logger";
     public static String updateUIFirstTimeResponse="";
     public static String logged_UserName = "";
