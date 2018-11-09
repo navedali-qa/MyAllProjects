@@ -82,7 +82,7 @@
 		
 		public function insertDataInLoginInfo($UserName, $Mobile_Serial_Number, $Start_Time, $End_Time, $Brand, $Mobile_Name, $Version, $Screen_Size)
 		{
-			$sql = "INSERT INTO Login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version, Screen_Size) VALUES ('".$UserName."', '".$Mobile_Serial_Number."', '".$Start_Time."', '".$End_Time."', '".$Brand."', '".$Mobile_Name."', '".$Version."', '".$Screen_Size."')";
+			$sql = "INSERT INTO login_Info (UserName, Mobile_Serial_Number, Start_Time, End_Time, Brand, Mobile_Name, Version, Screen_Size) VALUES ('".$UserName."', '".$Mobile_Serial_Number."', '".$Start_Time."', '".$End_Time."', '".$Brand."', '".$Mobile_Name."', '".$Version."', '".$Screen_Size."')";
 		
 			if ($this ->conn->query($sql) === TRUE)
 			{
@@ -90,7 +90,7 @@
 			}
 			else 
 			{
-				return "Error: " . $sql . "<br>" . $conn->error;
+				return "Error: " . $sql . "<br>" . $this->conn->error;
 			}
 		}
 	 
@@ -114,9 +114,9 @@
 			}
 		}
 	 
-		public function insertDeviceInfo($Mobile_Name, $Brand, $Mobile_Serial_Number, $Version, $Screen_Size, $Project)
+		public function insertDeviceInfo($Device_Type, $Mobile_Name, $Brand, $Mobile_Serial_Number, $Version, $Screen_Size, $Project)
 		{
-			$sql = "INSERT INTO device_details (Mobile_Name, Brand, Mobile_Serial_Number, Version, Screen_Size, Project) VALUES ('".$Mobile_Name."', '".$Brand."', '".$Mobile_Serial_Number."', '".$Version."', '".$Screen_Size."', '".$Project."')";
+			$sql = "INSERT INTO device_details (Device_Type, Mobile_Name, Brand, Mobile_Serial_Number, Version, Screen_Size, Project) VALUES ('".$Device_Type."', '".$Mobile_Name."', '".$Brand."', '".$Mobile_Serial_Number."', '".$Version."', '".$Screen_Size."', '".$Project."')";
 		 
 			if ($this->conn->query($sql) === TRUE)
 			{

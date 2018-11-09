@@ -4,7 +4,7 @@
 	$urlParams = explode('/', $_SERVER['REQUEST_URI']);
 	$functionName = $urlParams[4];
 	$functionName($urlParams);
-
+	
 	function isUserLoggedIn ($urlParams) 
 	{
 		$db = new DB_Functions();

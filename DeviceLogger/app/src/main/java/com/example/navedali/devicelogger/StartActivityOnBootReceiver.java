@@ -14,7 +14,7 @@ public class StartActivityOnBootReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if (
+        /*if (
                 intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
                 || intent.getAction().equals(Intent.ACTION_SCREEN_ON)
                 || intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)
@@ -26,7 +26,8 @@ public class StartActivityOnBootReceiver extends BroadcastReceiver
                 )
         {
             start_LoginPage(context);
-        }
+        }*/
+        start_LoginPage(context);
     }
 
     // Display Login screen

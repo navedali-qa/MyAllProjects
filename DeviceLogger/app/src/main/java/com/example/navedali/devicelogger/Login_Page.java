@@ -146,7 +146,6 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
             {
                 updateProject();
                 Variables.updateUIFirstTimeResponse = getDatabaseMethods().doInBackground(Variables.apiUrl+"/DeviceLoggerAPI/Api/updateUIFirstTime.php/isUserLoggedIn/"+Build.SERIAL);
-
                 if (!Variables.updateUIFirstTimeResponse.contains("\"error\":true") && !Variables.updateUIFirstTimeResponse.contains("Something wrong!!!"))
                 {
                     Variables.logged_UserName = getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"FirstName")+" "+getDatabaseMethods().parseJSON(Variables.updateUIFirstTimeResponse,"LastName");
@@ -476,7 +475,7 @@ public class Login_Page extends AppCompatActivity implements View.OnClickListene
         myTimerTask = new MyTimerTask();
         timer = new Timer();
         timer.schedule(myTimerTask, 0);
-        String query = "Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
+        String query = "Device_Type=Android&Mobile_Name=" + Build.MODEL.replaceAll(" ","%20") +"&Brand="+Build.BRAND+ "&Mobile_Serial_Number="+ Build.SERIAL+"&Version=Android%20"+Build.VERSION.RELEASE +"&Screen_Size="+getScreenSize()+"%20Inches&Project=Other";
         Variables.addDeviceDetailsApiResponse = getDatabaseMethods().doInBackground(Variables.apiUrl + "/DeviceLoggerAPI/Api/addDeviceDetails.php?" + query);
         fullscreen_content_login_controls_horizontal.setVisibility(View.VISIBLE);
         editText_username.setText("");
